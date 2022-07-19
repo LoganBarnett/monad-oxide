@@ -1,0 +1,101 @@
+#+title:     monad-oxide
+#+author:    Logan Barnett-Hoy
+#+email:     logustus@gmail.com
+#+date:      <2022-07-13 Wed>
+#+language:  en
+#+file_tags:
+#+tags:
+
+* summary
+=monad-oxide= is a Ruby take on Monads seen in [[https://www.rust-lang.org/][Rust's]] [[https://doc.rust-lang.org/stable/std/][=Std=]] package. Primarily
+this means [[https://doc.rust-lang.org/std/result/enum.Result.html#][=Result=]] and [[https://doc.rust-lang.org/std/option/enum.Option.html][=Option=]].
+
+You can use these structures in Ruby to achieve more reliable error handling and
+results processing. =Result= and =Option= are from the Monad family, which is
+essentially "programmable semicolons" - sequential operations which can be
+chained and have an error flow to them.
+
+This library attempts to account for some Rubyisms and will diverge from Rust's
+approach on occasion.
+
+For a great introductory talk showing the value of these constructs, see [[https://vimeo.com/113707214][Railway
+oriented programming: Error handling in functional languages by Scott Wlaschin]].
+The talk is about an hour long, but has a great comparison of imperative vs.
+functional error handling. In this library, =Either= is essentially the same as
+=Result=, and =Maybe= the same as =Option=.
+
+* examples
+
+Example Disclaimer:
+
+Despite lots of these examples using =unwrap= and =unwrap_err=, these are highly
+recommended not be used because it breaks out of the monad chain in a dangerous
+way. Exceptions can be raised, which unwinds your stack - you're basically back
+where you started. These methods are provided for convenience and testing, but
+it might be necessary to use these in some production instances. If so, code
+defensively around their usages and try to use the methods sparingly.  Having a
+dedicated quarantine zone around your =unwrap= and =unwrap_err= is the most
+preferable.
+
+Changing the inner value with =map=:
+#+begin_src ruby
+require 'monad-oxide'
+
+MonadOxide.ok('test')
+  .map(->(s) { s.uppercase() })
+  .unwrap() # 'test'
+#+end_src
+
+Changing the =Result= type based on input:
+#+begin_src ruby
+require 'monad-oxide'
+
+MonadOxide.ok('test')
+  .and_then(->(s) {
+    if s =~ /e/
+      MonadOxide.err(ArgumentError.new("Can't have 'e' in test data."))
+    else
+      MonadOxide.ok(s.uppercase())
+    end
+  })
+  .unwrap_err() # The above ArgumentError.
+#+end_src
+
+Inspecting a value in the chain without changing it:
+#+begin_src ruby
+require 'logger'
+require 'monad-oxide'
+
+logger = Logger.new(STDERR)
+MonadOxide.ok('test')
+  .and_then(->(s) {
+    if s =~ /e/
+      MonadOxide.err(ArgumentError.new("Can't have 'e' in test data."))
+    else
+      MonadOxide.ok(s.uppercase())
+    end
+  })
+  .inspect_err(logger.method(:error)) # Print any errors to the error log.
+  .inspect_ok(logger.method(:info)) # Print any non-errors to the info log.
+  .unwrap_err() # The above ArgumentError.
+#+end_src
+
+Complex operation:
+#+begin_src ruby
+require 'logger'
+require 'monad-oxide'
+
+logger = Logger.new(STDERR)
+MonadOxide.ok('test')
+  .and_then(->(s) {
+    if s =~ /e/
+      MonadOxide.err(ArgumentError.new("Can't have 'e' in test data."))
+    else
+      MonadOxide.ok(s.uppercase())
+    end
+  })
+  .map(->(s) { s.trim() }) # Won't actually get called due to error.
+  .inspect_err(logger.method(:error)) # Print any errors to the error log.
+  .inspect_ok(logger.method(:info)) # Print any non-errors to the info log.
+  .unwrap_err() # The above ArgumentError.
+#+end_src
