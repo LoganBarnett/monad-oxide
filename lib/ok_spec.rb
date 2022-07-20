@@ -118,7 +118,7 @@ describe MonadOxide::Ok do
       it 'returns an Err if an error is raised in the block' do
         expect(
           MonadOxide.ok('foo')
-            .map() {|_| raise StandardError.new }
+            .map() {|_| raise StandardError.new('bar') }
             .unwrap_err()
             .class()
           ).to(be(StandardError))
@@ -152,7 +152,7 @@ describe MonadOxide::Ok do
       it 'allows nesting of Err' do
         expect(
           MonadOxide.ok('foo')
-            .map() {|_| MonadOxide.err(StandardError.new()) }
+            .map() {|_| MonadOxide.err(StandardError.new('bar')) }
             .unwrap()
             .class()
           ).to(be(MonadOxide::Err))

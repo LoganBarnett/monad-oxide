@@ -1,7 +1,7 @@
 require_relative './result'
 
 module MonadOxide
-  class ResultReturnExpectedError < StandardError
+  class ResultReturnExpectedError < MonadOxideError
     def initialize(data)
       super("A Result was expected but got #{data.inspect}.")
       data = @data

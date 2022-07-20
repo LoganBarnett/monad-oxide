@@ -176,11 +176,125 @@ describe MonadOxide::Err do
   end
 
 
-  context '#map'
+  context '#map' do
+    context 'with blocks' do
+      it 'does nothing with the block' do
+        effected = 'unset'
+        MonadOxide.err(StandardError.new('foo'))
+          .map() {|s| effected = "effect: #{s}"}
+        expect(effected).not_to(eq('effect: foo'))
+      end
 
-  context '#map_err'
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map() { 'bar' }
+            .unwrap_err()
+            .message()
+          ).to(eq('foo'))
+      end
+    end
 
-  context '#unwrap'
+    context 'with Procs' do
+      it 'does nothing with the function' do
+        effected = 'unset'
+        MonadOxide.err(StandardError.new('foo'))
+          .map(->(s) { effected = "effect: #{s}"})
+        expect(effected).not_to(eq('effect: foo'))
+      end
 
-  context '#unwrap_err'
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map(->(_) { 'bar' })
+            .unwrap_err()
+            .message()
+          ).to(eq('foo'))
+      end
+    end
+  end
+
+  context '#map_err' do
+    context 'with blocks' do
+      it 'returns an Err if an error is raised in the block' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err() {|_| raise StandardError.new('bar') }
+            .unwrap_err()
+            .message()
+          ).to(eq('bar'))
+      end
+
+      it 'returns a new Err' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err() {|_| StandardErr.new('bar') }
+            .class()
+          ).to(be(MonadOxide::Err))
+      end
+
+      it 'applies the block to the data for the new Ok' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err() {|e| StandardError.new(e.message() + 'bar') }
+            .unwrap_err()
+            .message()
+          ).to(eq('foobar'))
+      end
+
+      it 'requires the mapped value is an Exception still' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err() {|_| 'bar'}
+            .unwrap_err()
+            .class()
+          ).to(be(TypeError))
+      end
+    end
+
+    context 'with Procs' do
+      it 'returns an Err if an error is raised in the function' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err(->(_) { raise StandardError.new })
+            .unwrap_err()
+            .class()
+          ).to(be(StandardError))
+      end
+
+      it 'applies the function to the data for the new Ok' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err(->(e) { StandardError.new(e.message() + 'bar') })
+            .unwrap_err()
+            .message()
+          ).to(eq('foobar'))
+      end
+
+      it 'requires the mapped value is an Exception still' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .map_err(->(_) { 'bar' })
+            .unwrap_err()
+            .class()
+          ).to(be(TypeError))
+      end
+    end
+  end
+
+  context '#unwrap' do
+    it 'raises an UnwrapError' do
+      expect {
+        MonadOxide.err(StandardError.new('foo')).unwrap()
+      }.to(raise_error(MonadOxide::UnwrapError))
+    end
+  end
+
+  context '#unwrap_err' do
+    it 'provides the underlying value' do
+      expect(
+        MonadOxide.err(StandardError.new('foo')).unwrap_err().message(),
+      ).to(eq('foo'))
+    end
+  end
 end
