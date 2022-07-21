@@ -28,6 +28,7 @@ jobs:
 #          bump-patch-for-minor-pre-major: false
 #          bump-minor-pre-major: false
 #          version-file: "lib/monad-oxide/version.rb"
+      - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
