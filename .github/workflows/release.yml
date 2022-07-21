@@ -1,0 +1,45 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  release-package:
+    runs-on: ubuntu-latest
+    env:
+      GEM_HOST_API_KEY: ${{ secrets.GEM_HOST_API_KEY }}
+    steps:
+
+# This is where we started looking at release-please, but it's kind of oriented
+# around intentional, gated releases. Screw that. CICD or GTFO.
+#
+#      - uses: GoogleCloudPlatform/release-please-action@v2
+#        id: release
+#        with:
+#          # The release type
+#          release-type: ruby
+#          # A name for the artifact releases are being created for
+#          # which is the name of our gem
+#          package-name: monad-oxide
+#          # We just want to bump the minor version only, since semver is a lie.
+#          # Force these settings to false, in case the defaults revert. This
+#          # also gives us a chance to state our intentions here, should someone
+#          # wonder if the setting is deliberate (it is).
+#          bump-patch-for-minor-pre-major: false
+#          bump-minor-pre-major: false
+#          version-file: "lib/monad-oxide/version.rb"
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+      - name: Configure Git
+        run: |
+          git config --global user.email "tip@gha"
+          git config --global user.name "GHA"
+      - name: Bump and commit
+        run: |
+          ./release.sh
+      - name: Push to rubygems.org
+        run: |
+          gem build *.gemspec
+          gem push *.gem
