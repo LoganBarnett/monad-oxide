@@ -43,4 +43,4 @@ jobs:
       - name: Push to rubygems.org
         run: |
           gem build *.gemspec
-          gem push *.gem
+          gem push --debug *.gem
