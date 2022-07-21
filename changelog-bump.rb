@@ -11,7 +11,7 @@ version = version_get().to_i
 warn("Found version #{version.inspect}.")
 file = File.read('CHANGELOG.org')
 replaced = file.sub(
-  /^\*\* (Upcoming)(.+?)\n\*\* 0\.#{version}\.0/sm,
+  /^\*\* (Upcoming)(.+?)\n\*\* v0\.#{version}\.0/sm,
   "** Upcoming
 ** v0.#{version + 1}.0\\2
 ** v0.#{version}.0",
@@ -20,7 +20,7 @@ if file == replaced
   warn "Error: No changes to made CHANGELOG.org."
   exit 1
 else
-  #File.write('CHANGELOG.org', replaced)
-  puts replaced
+  File.write('CHANGELOG.org', replaced)
+  #puts replaced
   warn("CHANGELOG.org updated!")
 end
