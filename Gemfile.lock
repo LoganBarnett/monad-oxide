@@ -7,6 +7,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.5.0)
+    org-ruby (0.9.12)
+      rubypants (~> 0.2)
     rake (13.0.6)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
@@ -21,14 +23,20 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
+    rubypants (0.7.1)
+    webrick (1.7.0)
+    yard (0.9.28)
+      webrick (~> 1.7.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   monad-oxide!
+  org-ruby
   rake
   rspec
+  yard
 
 BUNDLED WITH
    2.1.4

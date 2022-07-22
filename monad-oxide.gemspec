@@ -14,8 +14,12 @@ EOD
   # This make work on earlier versions, but it's hard to find a feature/version
   # matrix.
   s.required_ruby_version = '>= 2.7.0'
-  s.add_development_dependency 'rake'
+  # Used by yard to process org-mode (.org) documents.
+  s.add_development_dependency 'org-ruby'
+  # Used to run the test suite.
   s.add_development_dependency 'rspec'
+  # Used to generate and publish documentation to rdoc.
+  s.add_development_dependency 'yard'
   s.authors = [
     'Logan Barnett',
   ]

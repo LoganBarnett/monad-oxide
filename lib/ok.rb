@@ -1,21 +1,15 @@
 require_relative './result'
 
 module MonadOxide
-  class ResultReturnExpectedError < MonadOxideError
-    def initialize(data)
-      super("A Result was expected but got #{data.inspect}.")
-      data = @data
-    end
-
-    attr_reader(:data)
-  end
-
   ##
   # `Ok' represents a success `Result'. For most operations, `Ok' will perform
   # some operation. Exceptions raised during calls to `Ok' will coerce the chain
   # into `Err', which generally causes execution to fall through the entire
   # chain.
   class Ok < Result
+    ##
+    # Constructs an `Ok' with the data provided.
+    # @param data [Object] The inner data this Result encapsulates.
     def initialize(data)
       @data = data
     end
@@ -47,13 +41,25 @@ module MonadOxide
     end
 
     ##
-    #
+    # Falls through. @see Result#inspect_err for how this is handled in either
+    # Result case, and @see Err.inspect_err for how this is handled in the Err
+    # case.
+    # @param f [Proc] Optional Proc - ignored.
+    # @yield An ignored block.
+    # @return [Ok] This Ok.
     def inspect_err(f=nil, &block)
       self
     end
 
     ##
-    #
+    # Applies `f' or the block over the data and returns the same `Ok'. No
+    # changes are applied. This is ideal for logging.  Exceptions raised during
+    # these transformations will return an `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block instead.
+    #          Takes an [A] the return is ignored.
+    # @yield Will yield a block that takes an A the return is ignored. Same as
+    #        `f' parameter.
+    # @return [Result<A>] returns self.
     def inspect_ok(f=nil, &block)
       begin
         (f || block).call(@data)
@@ -68,11 +74,11 @@ module MonadOxide
     # returned value.
     # @param f [Proc<A, B>] The function to call. Could be a block
     #          instead. Takes an [A=Object] and returns a B.
-    # @yield Will yield a block that takes an A and returns a Result<B>. Same as
+    # @yield Will yield a block that takes an A and returns a B. Same as
     #        `f' parameter.
     # @return [Result<B>] A new `Ok<B>' whose `B' is the return of `f' or the
     #         block. Errors raised when applying `f' or the block will result in
-    # a returned `Err<Error>'.
+    #         a returned `Err<Exception>'.
     def map(f=nil, &block)
       begin
         self.class.new((f || block).call(@data))
@@ -91,13 +97,17 @@ module MonadOxide
     end
 
     ##
-    # Dangerously try to access the `Result' data. If this is an `Err', an
-    # exception will be raised. It is recommended to use this for tests only.
-    # @return [A] The inner data of this `Result'.
+    # Dangerously access the `Ok' data. If this is an `Err', an exception will
+    # be raised. It is recommended to use this for tests only.
+    # @return [A] The inner data of this `Ok'.
     def unwrap()
       @data
     end
 
+    ##
+    # Dangerously access the `Err' data. If this is an `Ok', an exception will
+    # be raised. It is recommended to use this for tests only.
+    # @return [E] The `Exception' of this `Err'.
     def unwrap_err()
       raise UnwrapError.new(
         "#{self.class} with #{@data.inspect} could not be unwrapped as an Err.",

@@ -6,7 +6,7 @@
 #+file_tags:
 #+tags:
 
-* summary
+* Summary
 =monad-oxide= is a Ruby take on Monads seen in [[https://www.rust-lang.org/][Rust's]] [[https://doc.rust-lang.org/stable/std/][=Std=]] package. Primarily
 this means [[https://doc.rust-lang.org/std/result/enum.Result.html#][=Result=]] and [[https://doc.rust-lang.org/std/option/enum.Option.html][=Option=]].
 
@@ -24,18 +24,18 @@ The talk is about an hour long, but has a great comparison of imperative vs.
 functional error handling. In this library, =Either= is essentially the same as
 =Result=, and =Maybe= the same as =Option=.
 
-* examples
+* Examples
 
 Example Disclaimer:
 
 Despite lots of these examples using =unwrap= and =unwrap_err=, these are highly
 recommended not be used because it breaks out of the monad chain in a dangerous
 way. Exceptions can be raised, which unwinds your stack - you're basically back
-where you started. These methods are provided for convenience and testing, but
-it might be necessary to use these in some production instances. If so, code
-defensively around their usages and try to use the methods sparingly.  Having a
-dedicated quarantine zone around your =unwrap= and =unwrap_err= is the most
-preferable.
+where you started without =monad-oxide=. These methods are provided for
+convenience and testing, but it might be necessary to use these in some
+production instances. If so, code defensively around their usages and try to use
+the methods sparingly.  Having a dedicated quarantine zone around your =unwrap=
+and =unwrap_err= is the most preferable.
 
 Changing the inner value with =map=:
 #+begin_src ruby
@@ -99,3 +99,7 @@ MonadOxide.ok('test')
   .inspect_ok(logger.method(:info)) # Print any non-errors to the info log.
   .unwrap_err() # The above ArgumentError.
 #+end_src
+* Honorable Mentions
+
+https://github.com/mxhold/opted has similar aims to =monad-oxide= - essentially
+a Rust port of the =Result= type.

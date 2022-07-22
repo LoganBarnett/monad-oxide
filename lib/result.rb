@@ -3,7 +3,34 @@ module MonadOxide
   # All errors in monad-oxide should inherit from this error. This makes it easy
   # to handle library-wide errors on the consumer side.
   class MonadOxideError < StandardError; end
+
+  ##
+  # Thie Exception signals an area under construction, or somehow the consumer
+  # wound up with a `Result' and not one of its subclasses (@see Ok and @see
+  # Err). Implementors of new methods on `Ok' and `Err' should create methods on
+  # `Result' as well which immediately raise this `Exception'.
   class ResultMethodNotImplementedError < MonadOxideError; end
+
+  ##
+  # This `Exception' is produced when a method that expects the function or
+  # block to provide a `Result' but was given something else. Generally this
+  # Exception is not raised, but instead converts the Result into a an Err.
+  # Example methods with this behavior are Result#and_then and Result#or_else.
+  class ResultReturnExpectedError < MonadOxideError
+    ##
+    # The transformation expected a `Result' but got something else.
+    # @param data [Object] Whatever we got that wasn't a `Result'.
+    def initialize(data)
+      super("A Result was expected but got #{data.inspect}.")
+      data = @data
+    end
+    attr_reader(:data)
+  end
+
+  ##
+  # This `Exception' is raised when the consumer makes a dangerous wager
+  # about which state the `Result' is in, and lost. More specifically: An `Ok'
+  # cannot unwrap an Exception, and an `Err' cannot unwrap the `Ok' data.
   class UnwrapError < MonadOxideError; end
 
   ##
@@ -72,26 +99,80 @@ module MonadOxide
       Err.new(ResultMethodNotImplementedError.new())
     end
 
+    ##
+    # In the case of `Ok', applies `f' or the block over the data and returns a
+    # new new `Ok' with the returned value. For `Err', this method falls
+    # through. Exceptions raised during these transformations will return an
+    # `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block
+    #          instead. Takes an [A=Object] and returns a B.
+    # @yield Will yield a block that takes an A and returns a B. Same as
+    #        `f' parameter.
+    # @return [Result<B>] A new `Result<B>' whose `B' is the return of `f' or
+    #         the block. Errors raised when applying `f' or the block will
+    #         result in a returned `Err<Exception>'.
     def map(f=nil, &block)
       Err.new(ResultMethodNotImplementedError.new())
     end
 
+    ##
+    # In the case of `Err', applies `f' or the block over the `Exception' and
+    # returns a new new `Err' with the returned value. For `Ok', this method
+    # falls through. Exceptions raised during these transformations will return
+    # an `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block
+    #          instead. Takes an [A=Exception] and returns a [B=Exception].
+    # @yield Will yield a block that takes an A and returns a B. Same as
+    #        `f' parameter.
+    # @return [Result<B>] A new `Result<A, ErrorB>' whose `ErrorB' is the return
+    #         of `f' or the block. Errors raised when applying `f' or the block
+    #         will result in a returned `Err<Exception>'.
     def map_err(f=nil, &block)
       Err.new(ResultMethodNotImplementedError.new())
     end
 
+    ##
+    # In the case of `Err', applies `f' or the block over the `Exception' and
+    # returns the same `Err'. No changes are applied. This is ideal for logging.
+    # For `Ok', this method falls through. Exceptions raised during these
+    # transformations will return an `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block instead.
+    #          Takes an [A=Exception] the return is ignored.
+    # @yield Will yield a block that takes an A the return is ignored. Same as
+    #        `f' parameter.
+    # @return [Result<A>] returns self.
     def inspect_err(f=nil, &block)
       Err.new(ResultMethodNotImplementedError.new())
     end
 
+    ##
+    # In the case of `Ok', applies `f' or the block over the data and returns
+    # the same `Ok'. No changes are applied. This is ideal for logging.  For
+    # `Err', this method falls through. Exceptions raised during these
+    # transformations will return an `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block instead.
+    #          Takes an [A] the return is ignored.
+    # @yield Will yield a block that takes an A the return is ignored. Same as
+    #        `f' parameter.
+    # @return [Result<A>] returns self.
     def inspect_ok(f=nil, &block)
       Err.new(ResultMethodNotImplementedError.new())
     end
 
+    ##
+    # Dangerously access the `Result' data. If this is an `Err', an exception
+    # will be raised. It is recommended to use this for tests only.
+    # @raise [UnwrapError] if called on an `Err'.
+    # @return [A] - The inner data of this `Ok'.
     def unwrap()
       Err.new(ResultMethodNotImplementedError.new())
     end
 
+    ##
+    # Dangerously access the `Result' data. If this is an `Ok', an exception
+    # will be raised. It is recommended to use this for tests only.
+    # @raise [UnwrapError] if called on an `Ok'.
+    # @return [E] - The inner data of this `Err'.
     def unwrap_err()
       Err.new(ResultMethodNotImplementedError.new())
     end
