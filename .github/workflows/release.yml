@@ -39,7 +39,7 @@ jobs:
           git config --global user.name "GHA"
       - name: Bump and commit
         run: |
-          ./release.sh
+          ./release.rb
       - name: Push to rubygems.org
         run: |
           gem build *.gemspec

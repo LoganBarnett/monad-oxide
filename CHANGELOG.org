@@ -1,4 +1,4 @@
-#+title:     Rename me
+#+title:     Changelog
 #+author:    Logan Barnett-Hoy
 #+email:     logustus@gmail.com
 #+date:      <2022-07-20 Wed>
@@ -8,14 +8,14 @@
 
 * changelog
 ** Upcoming
-** v0.2.0
-** v0.2.0
-** v0.2.0
-** v0.2.0
+None of these changes have any release impact.
 *** Breaking
 *** Additions
-1. Official release!
+1. Flesh out rdoc on all code entities. 100% yard coverage!
+2. Bash can get squirrelly Use all Ruby for more complex release scripting.
 *** Fixes
+1. Fix existing changelog.
+2. Make releases actually work beyond version 0.1.0.
 ** v0.1.0
 *** Breaking
 *** Additions
