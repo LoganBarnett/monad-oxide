@@ -16,6 +16,8 @@ EOD
   s.required_ruby_version = '>= 2.7.0'
   # Used by yard to process org-mode (.org) documents.
   s.add_development_dependency 'org-ruby'
+  # Used for building the gems.
+  s.add_development_dependency 'rake'
   # Used to run the test suite.
   s.add_development_dependency 'rspec'
   # Used to generate and publish documentation to rdoc.
