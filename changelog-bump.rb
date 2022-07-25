@@ -13,6 +13,9 @@ file = File.read('CHANGELOG.org')
 replaced = file.sub(
   /^\*\* (Upcoming)(.+?)\n\*\* v0\.#{version}\.0/sm,
   "** Upcoming
+*** Breaking
+*** Additions
+*** Fixes
 ** v0.#{version + 1}.0\\2
 ** v0.#{version}.0",
 )

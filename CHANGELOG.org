@@ -8,6 +8,13 @@
 
 * changelog
 ** Upcoming
+*** Breaking
+*** Additions
+1. Add =Result#or_else=, the =Err= equivalent to =Result#and_then=.
+*** Fixes
+1. Fix the automated release process accounting for =Gemfile.lock=.
+2. Fix subheadings for changelog on =Upcoming= not being populated on new
+   versions.
 ** v0.2.0
 None of these changes have any release impact.
 *** Breaking
