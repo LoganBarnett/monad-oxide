@@ -160,6 +160,35 @@ module MonadOxide
     end
 
     ##
+    # For `Err', invokes `f' or the block with the data and returns the Result
+    # returned from that. Exceptions raised during `f' or the block will return
+    # an `Err<Exception>'.
+    #
+    # For `Ok', returns itself and the function/block are ignored.
+    #
+    # This method is used for control flow based on `Result' values.
+    #
+    # `or_else' is desirable for chaining together other Result based
+    # operations, or doing transformations where flipping from an `Ok' to an
+    # `Err' is desired. In cases where there is little/no risk of an `Err'
+    # state, @see Result#map.
+    #
+    # The `Ok' equivalent operation is @see Result#and_then.
+    #
+    # The return type is enforced.
+    #
+    # @param f [Proc<A, Result<B>>] The function to call. Could be a block
+    #          instead. Takes an [A=Object] and must return a [Result<B>].
+    # @yield Will yield a block that takes an A and returns a Result<B>. Same as
+    #        `f' parameter.
+    # @return [Ok<B> | Err<C>] A new Result from `f' or the block. Exceptions
+    #         raised will result in `Err<C>'. If `f' returns a non-Result, this
+    #         will return `Err<ResultReturnExpectedError>'.
+    def or_else(f=nil, &block)
+      Err.new(ResultMethodNotImplementedError.new())
+    end
+
+    ##
     # Dangerously access the `Result' data. If this is an `Err', an exception
     # will be raised. It is recommended to use this for tests only.
     # @raise [UnwrapError] if called on an `Err'.

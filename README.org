@@ -85,6 +85,8 @@ Complex operation:
 require 'logger'
 require 'monad-oxide'
 
+class AppError < Exception; end
+
 logger = Logger.new(STDERR)
 MonadOxide.ok('test')
   .and_then(->(s) {
@@ -97,8 +99,18 @@ MonadOxide.ok('test')
   .map(->(s) { s.trim() }) # Won't actually get called due to error.
   .inspect_err(logger.method(:error)) # Print any errors to the error log.
   .inspect_ok(logger.method(:info)) # Print any non-errors to the info log.
-  .unwrap_err() # The above ArgumentError.
+  .or_else(->(e) {
+    if e.kind_of?(ArgumentError)
+      # Convert to an app-specific error for ArgumentErrors.
+      MonadOxide.err(AppError.new(e))
+    else
+      # For other errors, just chain it along. Backtrace will be preserved.
+      MonadOxide.err(e)
+    end
+  })
+  .unwrap_err() # The above AppError containing an ArgumentError.
 #+end_src
+
 * Honorable Mentions
 
 https://github.com/mxhold/opted has similar aims to =monad-oxide= - essentially

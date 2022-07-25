@@ -109,6 +109,32 @@ module MonadOxide
     end
 
     ##
+    # Invokes `f' or the block with the data and returns the Result returned
+    # from that. Exceptions raised during `f' or the block will return an
+    # `Err<Exception>'. The return type is enforced.
+    # @param f [Proc<A, Result<B>>] The function to call. Could be a block
+    #          instead. Takes an [A=Object] and must return a [Result<B>].
+    # @yield Will yield a block that takes an A and returns a Result<B>. Same as
+    #        `f' parameter.
+    # @return [Err<C> | Err<Exception>] A new Result from `f' or the block.
+    #         Exceptions raised will result in `Err<Exception>'. If `f' returns
+    #         a non-Result, this will return `Err<ResultReturnExpectedError>'.
+    def or_else(f=nil, &block)
+      begin
+        r = (f || block).call(@data)
+        # Enforce that we always get a Result. Without a Result, coerce to an
+        # Err.
+        if !r.kind_of?(Result)
+          raise ResultReturnExpectedError.new(r)
+        else
+          r
+        end
+      rescue => e
+        Err.new(e)
+      end
+    end
+
+    ##
     # Dangerously try to access the `Result' data. If this is an `Err', an
     # exception will be raised. It is recommended to use this for tests only.
     # @return [A] The inner data of this `Result'.

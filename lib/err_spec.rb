@@ -282,6 +282,122 @@ describe MonadOxide::Err do
     end
   end
 
+  context '#or_else' do
+
+    context 'with blocks' do
+      it 'passes the data from the Err to the block' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else() {|e|
+              MonadOxide.err(StandardError.new(e.message() + 'bar'))
+            }
+            .unwrap_err()
+            .message()
+        ).to(eq('foobar'))
+      end
+
+      it 'returns an Err when raised, with the raised Exception' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else() {|_| raise StandardError.new('flagrant') }
+            .unwrap_err()
+            .message()
+        ).to(eq('flagrant'))
+      end
+
+      it 'returns an Err if the block returns a non-Result' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else() {|_| 'bar' }
+            .class()
+        ).to(be(MonadOxide::Err))
+      end
+
+      it 'provides a Err<ResultReturnExpectedError> for non-Result returns' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else() {|_| 'bar' }
+            .unwrap_err()
+            .class()
+        ).to(be(MonadOxide::ResultReturnExpectedError))
+      end
+
+      it 'returns the same Err returned by the block' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else() {|_| MonadOxide.err(StandardError.new('bar')) }
+            .unwrap_err()
+            .message()
+        ).to(eq('bar'))
+      end
+
+      it 'returns the same Ok returned by the block' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else() {|_| MonadOxide.ok('bar') }
+            .unwrap()
+        ).to(eq('bar'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'passes the data from the Err to the function' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else(->(s) {
+              MonadOxide.err(StandardError.new(s.message() + 'bar'))
+            })
+            .unwrap_err()
+            .message()
+        ).to(eq('foobar'))
+      end
+
+      it 'returns an Err when raised, with the raised Exception' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else(->(_) { raise StandardError.new('flagrant') })
+            .unwrap_err()
+            .message()
+        ).to(eq('flagrant'))
+      end
+
+      it 'returns an Err if the block returns a non-Result' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else(->(_) { 'bar' })
+            .class()
+        ).to(be(MonadOxide::Err))
+      end
+
+      it 'provides a ResultReturnExpectedError in the Err for non-Result returns' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else(->(_) { 'bar' })
+            .unwrap_err()
+            .class()
+        ).to(be(MonadOxide::ResultReturnExpectedError))
+      end
+
+      it 'returns the same Err returned by the function' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else(->(_) { MonadOxide.err(StandardError.new('bar')) })
+            .unwrap_err()
+            .message()
+        ).to(eq('bar'))
+      end
+
+      it 'returns the same Ok returned by the function' do
+        expect(
+          MonadOxide.err(StandardError.new('foo'))
+            .or_else(->(_) { MonadOxide.ok('bar') })
+            .unwrap()
+        ).to(eq('bar'))
+      end
+
+    end
+
+  end
   context '#unwrap' do
     it 'raises an UnwrapError' do
       expect {

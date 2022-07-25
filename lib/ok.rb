@@ -97,6 +97,16 @@ module MonadOxide
     end
 
     ##
+    # The Err equivalent to Ok#and_then. This is a no-op for Ok. @see
+    # Err#or_else.
+    # @param f [Proc<A, B>] A dummy function. Not used.
+    # @yield A dummy block. Not used.
+    # @return [Result<A>] This `Ok'.
+    def or_else(f=nil, &block)
+      self
+    end
+
+    ##
     # Dangerously access the `Ok' data. If this is an `Err', an exception will
     # be raised. It is recommended to use this for tests only.
     # @return [A] The inner data of this `Ok'.

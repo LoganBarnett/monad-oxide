@@ -331,6 +331,48 @@ describe MonadOxide::Ok do
     end
   end
 
+  context '#or_else' do
+    context 'with blocks' do
+      it 'does nothing with the block' do
+        effected = 'unset'
+        MonadOxide.ok('foo')
+          .or_else() {|s|
+            effected = "effect: #{s}"
+            MonadOxide.ok(nil)
+          }
+        expect(effected).not_to(eq('effect: foo'))
+      end
+
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.ok('foo')
+            .or_else() {|_| MonadOxide.ok('bar') }
+            .unwrap()
+        ).to(eq('foo'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'does nothing with the function' do
+        effected = 'unset'
+        MonadOxide.ok('foo')
+          .or_else(->(s) {
+            effected = "effect: #{s}"
+            MonadOxide.ok('bar')
+          })
+        expect(effected).not_to(eq('effect: foo'))
+      end
+
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.ok('foo')
+            .or_else(->(_) { MonadOxide.ok('bar') })
+            .unwrap()
+        ).to(eq('foo'))
+      end
+    end
+  end
+
   context '#unwrap' do
     it 'provides the underlying value' do
       expect(MonadOxide.ok('foo').unwrap()).to(eq('foo'))
