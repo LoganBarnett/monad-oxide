@@ -2,7 +2,7 @@ require_relative 'lib/version'
 
 Gem::Specification.new do |s|
   s.name = 'monad-oxide'
-  s.files = Dir['lib/**/*.rb'].reject {|f| f !~ /_spec\.rb$/ }
+  s.files = Dir['lib/**/*.rb'].filter {|f| f !~ /_spec\.rb$/ }
   s.version = MonadOxide::VERSION
   s.summary = "Ruby port of Rust's Result and Option."
   s.description = <<-EOD
