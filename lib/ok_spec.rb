@@ -113,6 +113,96 @@ describe MonadOxide::Ok do
 
   end
 
+  context '#inspect_err' do
+    context 'with blocks' do
+      it 'does nothing with the block' do
+        effected = 'unset'
+        MonadOxide.ok('foo')
+          .inspect_err() {|s| effected = "effect: #{s}"}
+        expect(effected).not_to(eq('effect: foo'))
+      end
+
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.ok('foo')
+            .inspect_err() { 'bar' }
+            .unwrap()
+          ).to(eq('foo'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'does nothing with the function' do
+        effected = 'unset'
+        MonadOxide.ok('foo')
+          .inspect_err(->(s) { effected = "effect: #{s}"})
+        expect(effected).not_to(eq('effect: foo'))
+      end
+
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.ok('foo')
+            .inspect_err(->(_) { 'bar' })
+            .unwrap()
+          ).to(eq('foo'))
+      end
+    end
+  end
+
+  context '#inspect_ok' do
+    context 'with blocks' do
+      it 'applies the data to the block provided' do
+        effected = 'unset'
+        MonadOxide.ok('foo')
+          .inspect_ok(->(s) { effected = "effect: #{s}"})
+        expect(effected).to(eq('effect: foo'))
+      end
+
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.ok('foo')
+            .inspect_ok() {|_| 'bar' }
+            .unwrap()
+          ).to(eq('foo'))
+      end
+
+      it 'returns an Err with the error from the block' do
+        expect(
+          MonadOxide.ok('foo')
+            .inspect_ok() {|_| raise StandardError.new('flagrant') }
+            .unwrap_err()
+            .class()
+          ).to(be(StandardError))
+      end
+    end
+
+    context 'with Procs' do
+      it 'applies the data to the function provided' do
+        effected = 'unset'
+        MonadOxide.ok('foo')
+          .inspect_ok(->(s) { effected = "effect: #{s}"})
+        expect(effected).to(eq('effect: foo'))
+      end
+
+      it 'does not change the underlying data' do
+        expect(
+          MonadOxide.ok('foo')
+            .inspect_ok(->(_) { 'bar' })
+            .unwrap()
+          ).to(eq('foo'))
+      end
+
+      it 'returns an Err with the error from the function' do
+        expect(
+          MonadOxide.ok('foo')
+            .inspect_ok(->(_) { raise StandardError.new('flagrant') })
+            .unwrap_err()
+            .class()
+          ).to(be(StandardError))
+      end
+    end
+  end
+
   context '#map' do
     context 'with blocks' do
       it 'returns an Err if an error is raised in the block' do
@@ -241,94 +331,22 @@ describe MonadOxide::Ok do
     end
   end
 
-  context '#inspect_err' do
-    context 'with blocks' do
-      it 'does nothing with the block' do
-        effected = 'unset'
-        MonadOxide.ok('foo')
-          .inspect_err() {|s| effected = "effect: #{s}"}
-        expect(effected).not_to(eq('effect: foo'))
-      end
+  context '#match' do
 
-      it 'does not change the underlying data' do
-        expect(
-          MonadOxide.ok('foo')
-            .inspect_err() { 'bar' }
-            .unwrap()
-          ).to(eq('foo'))
-      end
+    it 'executes the Ok branch passing the value' do
+      exec = double('exec')
+      expect(exec).to(receive(:call).with('foo'))
+      MonadOxide.ok('foo')
+        .match({ MonadOxide::Ok => exec })
     end
 
-    context 'with Procs' do
-      it 'does nothing with the function' do
-        effected = 'unset'
+    it 'returns the result of the Ok Proc' do
+      expect(
         MonadOxide.ok('foo')
-          .inspect_err(->(s) { effected = "effect: #{s}"})
-        expect(effected).not_to(eq('effect: foo'))
-      end
-
-      it 'does not change the underlying data' do
-        expect(
-          MonadOxide.ok('foo')
-            .inspect_err(->(_) { 'bar' })
-            .unwrap()
-          ).to(eq('foo'))
-      end
-    end
-  end
-
-  context '#inspect_ok' do
-    context 'with blocks' do
-      it 'applies the data to the block provided' do
-        effected = 'unset'
-        MonadOxide.ok('foo')
-          .inspect_ok(->(s) { effected = "effect: #{s}"})
-        expect(effected).to(eq('effect: foo'))
-      end
-
-      it 'does not change the underlying data' do
-        expect(
-          MonadOxide.ok('foo')
-            .inspect_ok() {|_| 'bar' }
-            .unwrap()
-          ).to(eq('foo'))
-      end
-
-      it 'returns an Err with the error from the block' do
-        expect(
-          MonadOxide.ok('foo')
-            .inspect_ok() {|_| raise StandardError.new('flagrant') }
-            .unwrap_err()
-            .class()
-          ).to(be(StandardError))
-      end
+          .match({ MonadOxide::Ok => ->(x) { x.upcase() } })
+      ).to(eq('FOO'))
     end
 
-    context 'with Procs' do
-      it 'applies the data to the function provided' do
-        effected = 'unset'
-        MonadOxide.ok('foo')
-          .inspect_ok(->(s) { effected = "effect: #{s}"})
-        expect(effected).to(eq('effect: foo'))
-      end
-
-      it 'does not change the underlying data' do
-        expect(
-          MonadOxide.ok('foo')
-            .inspect_ok(->(_) { 'bar' })
-            .unwrap()
-          ).to(eq('foo'))
-      end
-
-      it 'returns an Err with the error from the function' do
-        expect(
-          MonadOxide.ok('foo')
-            .inspect_ok(->(_) { raise StandardError.new('flagrant') })
-            .unwrap_err()
-            .class()
-          ).to(be(StandardError))
-      end
-    end
   end
 
   context '#or_else' do

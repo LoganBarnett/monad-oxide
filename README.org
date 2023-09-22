@@ -7,6 +7,7 @@
 #+tags:
 
 * Summary
+
 =monad-oxide= is a Ruby take on Monads seen in [[https://www.rust-lang.org/][Rust's]] [[https://doc.rust-lang.org/stable/std/][=Std=]] package. Primarily
 this means [[https://doc.rust-lang.org/std/result/enum.Result.html#][=Result=]] and [[https://doc.rust-lang.org/std/option/enum.Option.html][=Option=]].
 
@@ -25,6 +26,9 @@ functional error handling. In this library, =Either= is essentially the same as
 =Result=, and =Maybe= the same as =Option=.
 
 * Examples
+:properties:
+:header-args: :ruby "nix-shell ./shell.nix --pure --run 'bundle exec ruby'" :dir .
+:end:
 
 Example Disclaimer:
 
@@ -37,17 +41,22 @@ production instances. If so, code defensively around their usages and try to use
 the methods sparingly.  Having a dedicated quarantine zone around your =unwrap=
 and =unwrap_err= is the most preferable.
 
+** map
+
 Changing the inner value with =map=:
-#+begin_src ruby
+#+begin_src ruby :results value :exports both
 require 'monad-oxide'
 
 MonadOxide.ok('test')
-  .map(->(s) { s.uppercase() })
+  .map(->(s) { s.upcase() })
   .unwrap() # 'test'
 #+end_src
 
+#+RESULTS:
+: TEST
+
 Changing the =Result= type based on input:
-#+begin_src ruby
+#+begin_src ruby :exports both
 require 'monad-oxide'
 
 MonadOxide.ok('test')
@@ -61,8 +70,13 @@ MonadOxide.ok('test')
   .unwrap_err() # The above ArgumentError.
 #+end_src
 
+#+RESULTS:
+: #<ArgumentError: Can't have 'e' in test data.>
+
+** inspect
+
 Inspecting a value in the chain without changing it:
-#+begin_src ruby
+#+begin_src ruby :exports both
 require 'logger'
 require 'monad-oxide'
 
@@ -80,8 +94,52 @@ MonadOxide.ok('test')
   .unwrap_err() # The above ArgumentError.
 #+end_src
 
+#+RESULTS:
+: #<ArgumentError: Can't have 'e' in test data.>
+
+** arrays
+
+You can use =#into_result= to convert an =Array= of =Results= to =Result= of an
+=Array=.
+
+#+begin_src ruby :results value verbatim :exports both
+require 'monad-oxide'
+
+[
+  MonadOxide.ok('foo'),
+  MonadOxide.ok('bar'),
+]
+  .into_result()
+  .unwrap()
+#+end_src
+
+#+RESULTS:
+: ["foo", "bar"]
+
+=#into_result= will provide an =Err= if any of the elements in the =Array= are
+=Err=.
+
+#+begin_src ruby :results value verbatim :exports both
+require 'monad-oxide'
+
+[
+  MonadOxide.ok('foo'),
+  MonadOxide.err('bar'),
+  MonadOxide.ok('baz'),
+  MonadOxide.err('qux'),
+]
+  .into_result()
+  .unwrap_err()
+#+end_src
+
+#+RESULTS:
+: ["bar", "qux"]
+
+** complex operations
+
 Complex operation:
-#+begin_src ruby
+
+#+begin_src ruby :exports both
 require 'logger'
 require 'monad-oxide'
 
@@ -115,3 +173,12 @@ MonadOxide.ok('test')
 
 https://github.com/mxhold/opted has similar aims to =monad-oxide= - essentially
 a Rust port of the =Result= type.
+* COMMENT Quirks in Documentation
+
+I can't make repeating =:header-args:= to split up the lines, despite there
+seeming to be _some_ examples indicating otherwise.
+
+=:exports both= doesn't work in =:header-args:= and must be applied individually
+to each code block.
+
+These may have bugs and I should research that at some point.

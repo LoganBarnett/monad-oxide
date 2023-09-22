@@ -100,6 +100,34 @@ module MonadOxide
     end
 
     ##
+    # In the case of `Err', applies `f' or the block over the `Exception' and
+    # returns the same `Err'. No changes are applied. This is ideal for logging.
+    # For `Ok', this method falls through. Exceptions raised during these
+    # transformations will return an `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block instead.
+    #          Takes an [A=Exception] the return is ignored.
+    # @yield Will yield a block that takes an A the return is ignored. Same as
+    #        `f' parameter.
+    # @return [Result<A>] returns self.
+    def inspect_err(f=nil, &block)
+      Err.new(ResultMethodNotImplementedError.new())
+    end
+
+    ##
+    # In the case of `Ok', applies `f' or the block over the data and returns
+    # the same `Ok'. No changes are applied. This is ideal for logging.  For
+    # `Err', this method falls through. Exceptions raised during these
+    # transformations will return an `Err' with the Exception.
+    # @param f [Proc<A, B>] The function to call. Could be a block instead.
+    #          Takes an [A] the return is ignored.
+    # @yield Will yield a block that takes an A the return is ignored. Same as
+    #        `f' parameter.
+    # @return [Result<A>] returns self.
+    def inspect_ok(f=nil, &block)
+      Err.new(ResultMethodNotImplementedError.new())
+    end
+
+    ##
     # In the case of `Ok', applies `f' or the block over the data and returns a
     # new new `Ok' with the returned value. For `Err', this method falls
     # through. Exceptions raised during these transformations will return an
@@ -132,31 +160,23 @@ module MonadOxide
     end
 
     ##
-    # In the case of `Err', applies `f' or the block over the `Exception' and
-    # returns the same `Err'. No changes are applied. This is ideal for logging.
-    # For `Ok', this method falls through. Exceptions raised during these
-    # transformations will return an `Err' with the Exception.
-    # @param f [Proc<A, B>] The function to call. Could be a block instead.
-    #          Takes an [A=Exception] the return is ignored.
-    # @yield Will yield a block that takes an A the return is ignored. Same as
-    #        `f' parameter.
-    # @return [Result<A>] returns self.
-    def inspect_err(f=nil, &block)
-      Err.new(ResultMethodNotImplementedError.new())
-    end
-
-    ##
-    # In the case of `Ok', applies `f' or the block over the data and returns
-    # the same `Ok'. No changes are applied. This is ideal for logging.  For
-    # `Err', this method falls through. Exceptions raised during these
-    # transformations will return an `Err' with the Exception.
-    # @param f [Proc<A, B>] The function to call. Could be a block instead.
-    #          Takes an [A] the return is ignored.
-    # @yield Will yield a block that takes an A the return is ignored. Same as
-    #        `f' parameter.
-    # @return [Result<A>] returns self.
-    def inspect_ok(f=nil, &block)
-      Err.new(ResultMethodNotImplementedError.new())
+    # Use pattern matching to work with both Ok and Err variants. This is useful
+    # when it is desirable to have both variants handled in the same location.
+    # It can also be useful when either variant can coerced into a non-Result
+    # type.
+    #
+    # Ruby has no built-in pattern matching, but the next best thing is a Hash
+    # using the Result classes themselves as the keys.
+    #
+    # Tests for this are found in Ok and Err's tests.
+    #
+    # @param matcher [Hash<Class, Proc<T | E, R>] matcher The matcher to match
+    # upon.
+    # @option matcher [Proc] MonadOxide::Ok The branch to execute for Ok.
+    # @option matcher [Proc] MonadOxide::Err The branch to execute for Err.
+    # @return [R] The return value of the executed Proc.
+    def match(matcher)
+      matcher[self.class].call(@data)
     end
 
     ##

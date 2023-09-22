@@ -1,6 +1,7 @@
 require_relative './result'
 require_relative './err'
 require_relative './ok'
+require_relative './array'
 require_relative './version'
 
 ##

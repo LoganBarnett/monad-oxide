@@ -7,11 +7,12 @@ describe MonadOxide::Err do
   # The constructor tests (MonadOxide::Err.new()) are exactly the same as the
   # helper (MonadOxide.err()).
   ctor_tests = ->(ctor) {
-    it 'raises a TypeError if not provided an Exception' do
-      expect { ctor.call('foo') }.to raise_error(TypeError)
+
+    it 'creates an Err from the data provided' do
+      expect(ctor.call('foo').unwrap_err()).to(eq('foo'))
     end
 
-    it 'establishes a backtrace for unraised Exceptions' do
+    it 'establishes a backtrace for an unraised Exception' do
       expect(
         ctor.call(StandardError.new('foo'))
           .unwrap_err()
@@ -19,7 +20,7 @@ describe MonadOxide::Err do
       ).not_to(be_nil())
     end
 
-    it 'retains backtraces for raised Exceptions' do
+    it 'retains backtraces for a raised Exception' do
       begin
         raise StandardError.new('foo')
       rescue => e
@@ -30,6 +31,27 @@ describe MonadOxide::Err do
         ).to(be(e.backtrace()))
       end
     end
+
+    it 'establishes a backtrace for unraised Exceptions' do
+      expect(
+        ctor.call([StandardError.new('foo')])
+          .unwrap_err()[0]
+          .backtrace()
+      ).not_to(be_nil())
+    end
+
+    it 'retains backtraces for raised Exceptions' do
+      begin
+        raise StandardError.new('foo')
+      rescue => e
+        expect(
+          ctor.call([e])
+            .unwrap_err()[0]
+            .backtrace()
+        ).to(be(e.backtrace()))
+      end
+    end
+
   }
 
   context '#initialize' do
@@ -242,14 +264,6 @@ describe MonadOxide::Err do
           ).to(eq('foobar'))
       end
 
-      it 'requires the mapped value is an Exception still' do
-        expect(
-          MonadOxide.err(StandardError.new('foo'))
-            .map_err() {|_| 'bar'}
-            .unwrap_err()
-            .class()
-          ).to(be(TypeError))
-      end
     end
 
     context 'with Procs' do
@@ -271,15 +285,25 @@ describe MonadOxide::Err do
           ).to(eq('foobar'))
       end
 
-      it 'requires the mapped value is an Exception still' do
-        expect(
-          MonadOxide.err(StandardError.new('foo'))
-            .map_err(->(_) { 'bar' })
-            .unwrap_err()
-            .class()
-          ).to(be(TypeError))
-      end
     end
+  end
+
+  context '#match' do
+
+    it 'executes the Err branch passing the value' do
+      exec = double('exec')
+      expect(exec).to(receive(:call) {|arg| arg.kind_of?(StandardError) })
+      MonadOxide.err(StandardError.new('foo'))
+        .match({ MonadOxide::Err => exec })
+    end
+
+    it 'returns the result of the Err Proc' do
+      expect(
+        MonadOxide.err(StandardError.new('foo'))
+          .match({ MonadOxide::Err => ->(x) { x.message().upcase() } })
+      ).to(eq('FOO'))
+    end
+
   end
 
   context '#or_else' do

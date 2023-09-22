@@ -6,6 +6,33 @@ module MonadOxide
   # Any methods in Result that would process a successful Result (Ok) will fall
   # through with Err instances.
   class Err < Result
+
+    ##
+    # Add a backtrace to an Exception, or just pass long whatever was given.
+    # The Exception is mutated in the process.
+    #
+    # Ruby Exceptions do not come with a backtrace. During the act of raising
+    # an Exception, that Exception is granted a backtrace. So any kind of
+    # `Exception.new()' invocations will have a `nil' value for `backtrace()'.
+    # To get around this, we can simply raise the Exception here, and then we
+    # get the backtrace we want.
+    #
+    # On a cursory search, this is not documented behavior.
+    #
+    # @param x [Exception|T] The potential Exception to add a backtrace to, if
+    #                        it is missing a backtrace.
+    # @returns [Exception|T] The passed value, with a backtrace added if it is
+    #                        an Exception.
+    def self.backtrace_fix(x)
+      if x.kind_of?(Exception) && x.backtrace.nil?
+        raise x
+      else
+        x
+      end
+    rescue => e
+      e
+    end
+
     ##
     # Create an Err.
     #
@@ -15,29 +42,16 @@ module MonadOxide
     # causes the backtrace to be populated and will be availabl to any cosumers
     # automatically.
     #
-    # @param data [Exception] This must be an Exception it will result in a
-    #                         TypeError.
-    # @raise [TypeError] Is raised if the input is not an Exception.
+    # @param data [T|Array<T>] The data for this Err.  If it is an Exception or
+    #                          an Array of Exceptions, this will add a backtrace
+    #                          if it the Exceptions do not have backtraces
+    #                          already.  Exception it will result in a
+    #                          TypeError.
     def initialize(data)
-      if !data.kind_of?(Exception)
-        raise TypeError.new("#{data.inspect} is not an Exception.")
+      if data.kind_of?(Array)
+        @data = data.map(&self.class.method(:backtrace_fix))
       else
-        begin
-          # Ruby Exceptions do not come with a backtrace. During the act of
-          # raising an Exception, that Exception is granted a backtrace. So any
-          # kind of `Exception.new()' invocations will have a `nil' value for
-          # `backtrace()'. To get around this, we can simply raise the Exception
-          # here, and then we get the backtrace we want.
-          #
-          # On a cursory search, this is not documented behavior.
-          if data.backtrace.nil?
-            raise data
-          else
-            @data = data
-          end
-        rescue => e
-          @data = e
-        end
+        @data = self.class.backtrace_fix(data)
       end
     end
 
@@ -151,5 +165,6 @@ module MonadOxide
     def unwrap_err()
       @data
     end
+
   end
 end
