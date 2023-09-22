@@ -13,3 +13,5 @@ puts `git commit -m "v#{version}"`
 # TODO: -a is unsigned (annotated) tagging, use signed tagging.
 puts `git tag "v#{version}"`
 puts `git push --follow-tags`
+# Push normal commits too?
+puts `git push`
