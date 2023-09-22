@@ -123,5 +123,16 @@ module MonadOxide
         "#{self.class} with #{@data.inspect} could not be unwrapped as an Err.",
       )
     end
+
+    ##
+    # Safely unwrap the `Result`. In the case of `Ok`, this returns the
+    # data in the Ok.
+    #
+    # @param [B] x The value that will be returned.
+    # @return [A] The data in the Ok.
+    def unwrap_or(_)
+      @data
+    end
+
   end
 end

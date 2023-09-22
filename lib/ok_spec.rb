@@ -404,4 +404,12 @@ describe MonadOxide::Ok do
       }.to(raise_error(MonadOxide::UnwrapError))
     end
   end
+
+  context '#unwrap_or' do
+
+    it 'returns the data from the Ok' do
+      expect(MonadOxide.ok('foo').unwrap_or('bar')).to(eq('foo'))
+    end
+
+  end
 end

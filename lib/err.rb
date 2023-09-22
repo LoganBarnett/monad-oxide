@@ -166,5 +166,15 @@ module MonadOxide
       @data
     end
 
+    ##
+    # Safely unwrap the `Result`. In the case of `Err`, this returns the
+    # provided default value.
+    #
+    # @param [T] x The value that will be returned.
+    # @return [T] The `x` value.
+    def unwrap_or(x)
+      x
+    end
+
   end
 end

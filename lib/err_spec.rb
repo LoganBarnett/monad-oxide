@@ -437,4 +437,12 @@ describe MonadOxide::Err do
       ).to(eq('foo'))
     end
   end
+
+  context '#unwrap_or' do
+
+    it 'returns the passed data' do
+      expect(MonadOxide.err('foo').unwrap_or('bar')).to(eq('bar'))
+    end
+
+  end
 end

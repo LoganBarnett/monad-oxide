@@ -225,5 +225,16 @@ module MonadOxide
     def unwrap_err()
       Err.new(ResultMethodNotImplementedError.new())
     end
+
+    ##
+    # Attempt to safely access the `Result` data. This always returns a value
+    # instead of raising an Exception. In the case of `Ok`, the data is
+    # returned. In the case of `Err`, the value provided is returned.
+    # @param _ [B] The value to use for `Err`.
+    # @return [T|B] The inner data of this `Ok` or the passee value.
+    def unwrap_or(_)
+      Err.new(ResultMethodNotImplementedError.new())
+    end
+
   end
 end

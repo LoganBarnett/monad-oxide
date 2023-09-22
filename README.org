@@ -97,6 +97,101 @@ MonadOxide.ok('test')
 #+RESULTS:
 : #<ArgumentError: Can't have 'e' in test data.>
 
+** unwrapping
+
+Unwrapping is the act of accessing the value inside the =Result=. It is often
+considered dangerous because it raises exceptions - an action counter to the
+whole purpose of =monad-oxide=. However, there are variants documented below to
+make the operation safe.
+
+*** unwrap and unwrap_err
+
+=unwrap= and =unwrap_err= both access inner =Ok= and =Err= data, respectively.
+If the =Result= is mismatched (=unwrap= and =Err= or =unwrap_err= and =Ok=), an
+=MonadOxide::UnwrapError= is raised.
+
+It is recommended to only use this for debugging purposes and instead seek
+better, more functional uses in =Result= to work with the data in the =Result=.
+
+=Ok= with =unwrap= just gets the data.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.ok('foo').unwrap()
+#+end_src
+
+#+RESULTS:
+: foo
+
+=Err= with =unwrap= raises =UnwrapError=:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+begin
+  MonadOxide.err('foo').unwrap()
+rescue => e
+  e.inspect()
+end
+#+end_src
+
+#+RESULTS:
+: #<MonadOxide::UnwrapError: MonadOxide::Err with "foo" could not be unwrapped as an Ok.>
+
+=Ok= with =unwrap_err= raises =UnwrapError=:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+begin
+  MonadOxide.ok('foo').unwrap_err()
+rescue => e
+  e.inspect()
+end
+#+end_src
+
+#+RESULTS:
+: #<MonadOxide::UnwrapError: MonadOxide::Ok with "foo" could not be unwrapped as an Err.>
+
+=Ok= with =unwrap= just gets the data.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.err('foo').unwrap_err()
+#+end_src
+
+#+RESULTS:
+: foo
+
+*** unwrap_or
+
+=unwrap_or= provides a safe means of unwrapping via a fallback value that is
+provided to =unwrap_or=.
+
+For =Ok=, =unwrap_or= provides the value in the =Ok=.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.ok('foo').unwrap_or('bar')
+#+end_src
+
+#+RESULTS:
+: foo
+
+For =Err=, =unwrap_or= provides the value passed to =unwrap_or=.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.err('foo').unwrap_or('bar')
+#+end_src
+
+#+RESULTS:
+: bar
+
 ** arrays
 
 You can use =#into_result= to convert an =Array= of =Results= to =Result= of an
