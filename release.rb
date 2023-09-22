@@ -7,7 +7,7 @@ puts "Creating and pushing tag '#{version}'."
 version_set(version)
 # --no-deployment allows the Gemfile.lock to update. This isn't technical a
 # deployment (such as like deploying a Rails app), so this isn't too egregious.
-puts `bundle install --no-deployment`
+puts `bundle config unset deployment && bundle install --no-deployment`
 # Gemfile.lock is also bumped after this, and needs to be added or it will foul
 # up later releases.
 puts `git add CHANGELOG.org lib/version.rb Gemfile.lock`
