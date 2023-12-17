@@ -64,7 +64,7 @@ MonadOxide.ok('test')
     if s =~ /e/
       MonadOxide.err(ArgumentError.new("Can't have 'e' in test data."))
     else
-      MonadOxide.ok(s.uppercase())
+      MonadOxide.ok(s.upcase())
     end
   })
   .unwrap_err() # The above ArgumentError.
@@ -86,7 +86,7 @@ MonadOxide.ok('test')
     if s =~ /e/
       MonadOxide.err(ArgumentError.new("Can't have 'e' in test data."))
     else
-      MonadOxide.ok(s.uppercase())
+      MonadOxide.ok(s.upcase())
     end
   })
   .inspect_err(logger.method(:error)) # Print any errors to the error log.
@@ -246,7 +246,7 @@ MonadOxide.ok('test')
     if s =~ /e/
       MonadOxide.err(ArgumentError.new("Can't have 'e' in test data."))
     else
-      MonadOxide.ok(s.uppercase())
+      MonadOxide.ok(s.upcase())
     end
   })
   .map(->(s) { s.trim() }) # Won't actually get called due to error.
