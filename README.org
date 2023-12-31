@@ -5,8 +5,12 @@
 #+language:  en
 #+file_tags:
 #+tags:
+#+auto_id:   t
 
 * Summary
+:PROPERTIES:
+:CUSTOM_ID: summary
+:END:
 
 =monad-oxide= is a Ruby take on Monads seen in [[https://www.rust-lang.org/][Rust's]] [[https://doc.rust-lang.org/stable/std/][=Std=]] package. Primarily
 this means [[https://doc.rust-lang.org/std/result/enum.Result.html#][=Result=]] and [[https://doc.rust-lang.org/std/option/enum.Option.html][=Option=]].
@@ -28,6 +32,7 @@ functional error handling. In this library, =Either= is essentially the same as
 * Examples
 :properties:
 :header-args: :ruby "nix develop '.#default' --command bash -c 'bundle exec ruby'" :dir .
+:CUSTOM_ID: examples
 :end:
 
 Example Disclaimer:
@@ -42,6 +47,9 @@ the methods sparingly.  Having a dedicated quarantine zone around your =unwrap=
 and =unwrap_err= is the most preferable.
 
 ** map
+:PROPERTIES:
+:CUSTOM_ID: examples--map
+:END:
 
 Changing the inner value with =map=:
 #+begin_src ruby :results value :exports both
@@ -74,6 +82,9 @@ MonadOxide.ok('test')
 : #<ArgumentError: Can't have 'e' in test data.>
 
 ** inspect
+:PROPERTIES:
+:CUSTOM_ID: examples--inspect
+:END:
 
 Inspecting a value in the chain without changing it:
 #+begin_src ruby :exports both
@@ -97,6 +108,9 @@ MonadOxide.ok('test')
 #+RESULTS:
 : #<ArgumentError: Can't have 'e' in test data.>
 ** =<kind>?= checks
+:PROPERTIES:
+:CUSTOM_ID: examples--=<kind>=-checks
+:END:
 
 You can check to see if you're working with an =Ok= or =Err= with =ok?= and
 =err?=.  Generally these should see the most use with your unit tests in the
@@ -138,6 +152,9 @@ MonadOxide.err('foo').err?()
 : true
 
 *** with =rspec=
+:PROPERTIES:
+:CUSTOM_ID: examples--=<kind>=-checks--with-=rspec=
+:END:
 
 And with =rspec=.  There's some difficulty in finding the right incantation to
 call into =rspec= without actually running =rspec=, or getting =rspec= to be the
@@ -153,6 +170,9 @@ expect(MonadOxide.err('foo')).to(be_err) # Pass.
 
 
 ** unwrapping
+:PROPERTIES:
+:CUSTOM_ID: examples--unwrapping
+:END:
 
 Unwrapping is the act of accessing the value inside the =Result=. It is often
 considered dangerous because it raises exceptions - an action counter to the
@@ -160,6 +180,9 @@ whole purpose of =monad-oxide=. However, there are variants documented below to
 make the operation safe.
 
 *** unwrap and unwrap_err
+:PROPERTIES:
+:CUSTOM_ID: examples--unwrapping--unwrap-and-unwrap_err
+:END:
 
 =unwrap= and =unwrap_err= both access inner =Ok= and =Err= data, respectively.
 If the =Result= is mismatched (=unwrap= with =Err= or =unwrap_err= with =Ok=),
@@ -221,6 +244,9 @@ MonadOxide.err('foo').unwrap_err()
 : foo
 
 *** unwrap_or
+:PROPERTIES:
+:CUSTOM_ID: examples--unwrapping--unwrap_or
+:END:
 
 =unwrap_or= provides a safe means of unwrapping via a fallback value that is
 provided to =unwrap_or=.
@@ -248,6 +274,9 @@ MonadOxide.err('foo').unwrap_or('bar')
 : bar
 
 *** unwrap_or_else and unwrap_err_or_else
+:PROPERTIES:
+:CUSTOM_ID: examples--unwrapping--unwrap_or_else-and-unwrap_err_or_else
+:END:
 
 =unwrap_or_else= and =unwrap_err_or_else= both access inner =Ok= and =Err= data,
 respectively.  If the =Result= is mismatched (=unwrap_or_else= with =Err= or
@@ -301,6 +330,9 @@ MonadOxide.err('foo').unwrap_err(->() { 'bar' })
 : foo
 
 ** arrays
+:PROPERTIES:
+:CUSTOM_ID: examples--arrays
+:END:
 
 You can use =#into_result= to convert an =Array= of =Results= to =Result= of an
 =Array=.
@@ -339,6 +371,9 @@ require 'monad-oxide'
 : ["bar", "qux"]
 
 ** complex operations
+:PROPERTIES:
+:CUSTOM_ID: examples--complex-operations
+:END:
 
 Complex operation:
 
@@ -373,11 +408,92 @@ MonadOxide.ok('test')
 #+end_src
 
 * Honorable Mentions
+:PROPERTIES:
+:CUSTOM_ID: honorable-mentions
+:END:
 
 https://github.com/mxhold/opted has similar aims to =monad-oxide= - essentially
 a Rust port of the =Result= type.
 
+* Roadmap
+:PROPERTIES:
+:CUSTOM_ID: roadmap
+:END:
+** Add Option
+:PROPERTIES:
+:CUSTOM_ID: roadmap--add-option
+:END:
+
+This would complete the Rust monads that I know of.  =Option= is Rust's answer
+to =nil=.
+
+*** Add Advanced Option Functionality
+:PROPERTIES:
+:CUSTOM_ID: roadmap--add-option--add-advanced-option-functionality
+:END:
+
+This covers methods needed on =Array=, and translation methods between =Result=
+and =Option=, as well as boolean operations.  This can all be done as separate
+work from general =Option= support as well as separate from each other.
+
+If we did =<<= and =>>= for =Result=, we should repeat that for =Option= as
+well.
+
+** Check on Documentation Generation
+:PROPERTIES:
+:CUSTOM_ID: roadmap--check-on-documentation-generation
+:END:
+
+We can run =yard= documentation generation locally but I don't think we can push
+it to the official docs site (I don't have a link handy, and am offline).  That
+said, I have seen generated documentation.  I have a ticket open for this, and
+should see if it needs to be closed.  I don't have the link handy either.
+
+** Support boolean operators
+:PROPERTIES:
+:CUSTOM_ID: roadmap--support-boolean-operators
+:END:
+
+=or=, =and=, etc should be supported.  In addition, we can support =||= and =&&=
+and maybe some others that Ruby allows.
+
+** Support bind operator for Result?
+:PROPERTIES:
+:CUSTOM_ID: roadmap--support-bind-operator-for-result
+:END:
+
+We could override =<<= and =>>= to mean =and_then= and =or_else=.  I'd have to
+see what that looks like.  Granted this isn't in the Rust capabilities, but it
+might be fitting for Ruby.  Those who don't want the syntax are not compelled to
+use it.
+
+** Support =?= equivalent
+:PROPERTIES:
+:CUSTOM_ID: roadmap--support-==-equivalent
+:END:
+
+I don't know that this is reasonably doable in Ruby, but I admit it's handy in
+Rust.  Being able to handle the unwrap-or-return-err-early behavior would be
+nice even if it didn't look as pretty as =?=.  We could allow decoration on a
+method (=monad_oxide(:method)=) which rescues a special, internal =Exception=.
+I think with actual Ruby exception handling this could be easy to mess up.
+Perhaps we could do some meta programming where we force the early return via
+binding?
+
+In any case, some equivalent to this could be nice.
+** Additional Feature Parity
+:PROPERTIES:
+:CUSTOM_ID: roadmap--additional-feature-parity
+:END:
+
+We should strive to stay in feature parity with Rust's =Option= and =Result= but
+I don't have an exhaustive list right now.  Currently it's very nearly complete.
+It would be helpful to have a tally and a documented percentage of parity.
+
 * COMMENT Quirks in Documentation
+:PROPERTIES:
+:CUSTOM_ID: quirks-in-documentation
+:END:
 
 I can't make repeating =:header-args:= to split up the lines, despite there
 seeming to be _some_ examples indicating otherwise.
