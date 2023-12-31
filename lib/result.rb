@@ -241,6 +241,21 @@ module MonadOxide
     end
 
     ##
+    # Safely unwrap the `Result` but with lazy evaluation.  In the case of
+    # `Err`, this returns the wrapped value.  For `Ok` the function provided is
+    # evaluated and its returned value is what is returned.
+    #
+    # @param f [Proc<B>] The function to call for `Ok`. Could be a block
+    #          instead.  Takes nothing and returns a [B=Object].
+    # @yield Will yield a block for `Ok` that takes nothing and returns a
+    #        [B=Object].  Same as `f' parameter.
+    # @return [T|B] The wrapped value for `Err` and the returned from `f` for
+    #               `Ok`.
+    def unwrap_err_or_else(_f)
+      raise ResultMethodNotImplementedError.new()
+    end
+
+    ##
     # Attempt to safely access the `Result` data. This always returns a value
     # instead of raising an Exception. In the case of `Ok`, the data is
     # returned. In the case of `Err`, the value provided is returned.
@@ -248,6 +263,36 @@ module MonadOxide
     # @return [T|B] The inner data of this `Ok` or the passee value.
     def unwrap_or(_)
       Err.new(ResultMethodNotImplementedError.new())
+    end
+
+    ##
+    # Safely unwrap the `Result` but with lazy evaluation.  In the case of
+    # `Ok`, this returns the wrapped value.  For `Err` the function provided is
+    # evaluated and its returned value is what is returned.
+    #
+    # @param f [Proc<B>] The function to call for `Err`. Could be a block
+    #          instead.  Takes nothing and returns a [B=Object].
+    # @yield Will yield a block for `Err` that takes nothing and returns a
+    #        [B=Object].  Same as `f' parameter.
+    # @return [T|B] The wrapped value for `Ok` and the returned from `f` for
+    #               `Err`.
+    def unwrap_or_else(_f)
+      raise ResultMethodNotImplementedError.new()
+    end
+
+    ##
+    # Safely unwrap the `Result` but with lazy evaluation.  In the case of `Ok`,
+    # this returns the wrapped value.  For `Err` the function provided is
+    # evaluated and its returned value is what is returned.
+    #
+    # @param f [Proc<B>] The function to call for `Err`. Could be a block
+    #          instead.  Takes nothing and returns a [B=Object].
+    # @yield Will yield a block for `Err` that takes nothing and returns a
+    #        [B=Object].  Same as `f' parameter.
+    # @return [T|B] The wrapped value for `Ok` and the returned from `f` for
+    #               `Err`.
+    def unwrap_or_else(_f)
+      raise ResultMethodNotImplementedError.new()
     end
 
   end

@@ -162,8 +162,8 @@ make the operation safe.
 *** unwrap and unwrap_err
 
 =unwrap= and =unwrap_err= both access inner =Ok= and =Err= data, respectively.
-If the =Result= is mismatched (=unwrap= and =Err= or =unwrap_err= and =Ok=), an
-=MonadOxide::UnwrapError= is raised.
+If the =Result= is mismatched (=unwrap= with =Err= or =unwrap_err= with =Ok=),
+an =MonadOxide::UnwrapError= is raised.
 
 It is recommended to only use this for debugging purposes and instead seek
 better, more functional uses in =Result= to work with the data in the =Result=.
@@ -209,7 +209,7 @@ end
 #+RESULTS:
 : #<MonadOxide::UnwrapError: MonadOxide::Ok with "foo" could not be unwrapped as an Err.>
 
-=Ok= with =unwrap= just gets the data.
+=Err= with =unwrap_err= just gets the data.
 
 #+begin_src ruby :results value :exports both
 require 'monad-oxide'
@@ -246,6 +246,59 @@ MonadOxide.err('foo').unwrap_or('bar')
 
 #+RESULTS:
 : bar
+
+*** unwrap_or_else and unwrap_err_or_else
+
+=unwrap_or_else= and =unwrap_err_or_else= both access inner =Ok= and =Err= data,
+respectively.  If the =Result= is mismatched (=unwrap_or_else= with =Err= or
+=unwrap_err_or_else= with =Ok=), the provided function or block is evaluated and
+its return value is returned.
+
+This =unwrap= is safe because there is always a value returned.
+
+=Ok= with =unwrap_or_else= just gets the data.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.ok('foo').unwrap_or_else(->() { 'bar' })
+#+end_src
+
+#+RESULTS:
+: foo
+
+=Err= with =unwrap_or_else= returns the value from the provided function:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.err('foo').unwrap(->(){ 'bar' })
+#+end_src
+
+#+RESULTS:
+: bar
+
+=Ok= with =unwrap_err_or_else= returns the value from the provided function:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.ok('foo').unwrap_err_or_else(->() { 'bar' })
+#+end_src
+
+#+RESULTS:
+: bar
+
+=Err= with =unwrap_err_or_else= just gets the data.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.err('foo').unwrap_err(->() { 'bar' })
+#+end_src
+
+#+RESULTS:
+: foo
 
 ** arrays
 

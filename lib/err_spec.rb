@@ -449,10 +449,44 @@ describe MonadOxide::Err do
     end
   end
 
+  context '#unwrap_err_or_else' do
+
+    context 'with Blocks' do
+      it 'returns the wrapped data' do
+        expect(MonadOxide.err('foo').unwrap_err_or_else {|| 'bar'}).to(eq('foo'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'returns the wrapped data' do
+        expect(
+          MonadOxide.err('foo').unwrap_err_or_else(->() {'bar'}),
+        ).to(eq('foo'))
+      end
+    end
+
+  end
+
   context '#unwrap_or' do
 
     it 'returns the passed data' do
       expect(MonadOxide.err('foo').unwrap_or('bar')).to(eq('bar'))
+    end
+
+  end
+
+  context '#unwrap_or_else' do
+
+    context 'with Blocks' do
+      it 'returns the data from the passed block' do
+        expect(MonadOxide.err('foo').unwrap_or_else() {|| 'bar'}).to(eq('bar'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'returns the data from the passed function' do
+        expect(MonadOxide.err('foo').unwrap_or_else(->() {'bar'})).to(eq('bar'))
+      end
     end
 
   end
