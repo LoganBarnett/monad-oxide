@@ -125,12 +125,35 @@ module MonadOxide
     end
 
     ##
+    # Safely unwrap the `Result`.  In the case of `Ok`, this returns the
+    # evaluated value.
+    #
+    # @param f [Proc<B>] The function to call. Could be a block
+    #          instead.  Takes nothing and returns a [B=Object].
+    # @yield Will yield a block that takes nothing and returns a [B=Object].
+    #        Same as `f' parameter.
+    # @return [B] The value returned from `f`.
+    def unwrap_or_else(f=nil, &block)
+      (f || block).call(@data)
+    end
+
+    ##
     # Safely unwrap the `Result`. In the case of `Ok`, this returns the
     # data in the Ok.
     #
-    # @param [B] x The value that will be returned.
+    # @param [B] _x The value that will be returned.
     # @return [A] The data in the Ok.
-    def unwrap_or(_)
+    def unwrap_or(_x)
+      @data
+    end
+
+    ##
+    # Safely unwrap the `Result`. In the case of `Ok`, this returns the
+    # wrapped value.
+    #
+    # @param _f A dummy function.  Not used.
+    # @return [T] The wrapped value.
+    def unwrap_or_else(_f)
       @data
     end
 
