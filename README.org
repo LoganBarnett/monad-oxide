@@ -27,7 +27,7 @@ functional error handling. In this library, =Either= is essentially the same as
 
 * Examples
 :properties:
-:header-args: :ruby "nix-shell ./shell.nix --pure --run 'bundle exec ruby'" :dir .
+:header-args: :ruby "nix develop '.#default' --command bash -c 'bundle exec ruby'" :dir .
 :end:
 
 Example Disclaimer:
@@ -96,6 +96,61 @@ MonadOxide.ok('test')
 
 #+RESULTS:
 : #<ArgumentError: Can't have 'e' in test data.>
+** =<kind>?= checks
+
+You can check to see if you're working with an =Ok= or =Err= with =ok?= and
+=err?=.  Generally these should see the most use with your unit tests in the
+form of =expect(foo).to(be_ok())= and =expect(bar).to(be_err()))=.  It is
+advised to favor mechanisms like =#match= or one of the safe =#unwrap= variants
+when attempting to do conditional work based on the =Result= subtype, rather
+than adding branching paths.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.ok('foo').ok?()
+#+end_src
+
+#+RESULTS:
+: true
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.ok('foo').err?()
+#+end_src
+
+#+RESULTS:
+: false
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.err('foo').ok?()
+#+end_src
+
+#+RESULTS:
+: false
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.err('foo').err?()
+#+end_src
+
+#+RESULTS:
+: true
+
+*** with =rspec=
+
+And with =rspec=.  There's some difficulty in finding the right incantation to
+call into =rspec= without actually running =rspec=, or getting =rspec= to be the
+"ruby" runner for =org-babel=, so results aren't shown.
+
+#+begin_src ruby :results none :exports code
+require 'monad-oxide'
+expect(MonadOxide.ok('foo')).to(be_ok) # Pass.
+expect(MonadOxide.ok('foo')).to(be_err) # Fail.
+expect(MonadOxide.err('foo')).to(be_ok) # Fail.
+expect(MonadOxide.err('foo')).to(be_err) # Pass.
+#+end_src
+
 
 ** unwrapping
 
@@ -268,6 +323,7 @@ MonadOxide.ok('test')
 
 https://github.com/mxhold/opted has similar aims to =monad-oxide= - essentially
 a Rust port of the =Result= type.
+
 * COMMENT Quirks in Documentation
 
 I can't make repeating =:header-args:= to split up the lines, despite there
