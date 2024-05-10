@@ -57,20 +57,6 @@ module MonadOxide
     end
 
     ##
-    # Un-nest this `Result'. This implementation is shared between `Ok' and
-    # `Err'. In both cases, the structure's data is operated upon.
-    # @return [Result] If `A' is a `Result' (meaning this `Result` is nested),
-    # return the inner-most `Result', regardless of the depth of nesting.
-    # Otherwise return `self'.
-    def flatten()
-      if @data.kind_of?(Result)
-        return @data.flatten()
-      else
-        self
-      end
-    end
-
-    ##
     # For `Ok', invokes `f' or the block with the data and returns the Result
     # returned from that. Exceptions raised during `f' or the block will return
     # an `Err<Exception>'.
@@ -111,6 +97,20 @@ module MonadOxide
     # @return [Result<A>] returns self.
     def inspect_err(f=nil, &block)
       Err.new(ResultMethodNotImplementedError.new())
+    end
+
+    ##
+    # Un-nest this `Result'. This implementation is shared between `Ok' and
+    # `Err'. In both cases, the structure's data is operated upon.
+    # @return [Result] If `A' is a `Result' (meaning this `Result` is nested),
+    # return the inner-most `Result', regardless of the depth of nesting.
+    # Otherwise return `self'.
+    def flatten()
+      if @data.kind_of?(Result)
+        return @data.flatten()
+      else
+        self
+      end
     end
 
     ##
