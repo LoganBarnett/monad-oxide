@@ -189,6 +189,16 @@ module MonadOxide
     end
 
     ##
+    # Safely unwrap the `Result`.  In the case of `Err`, this returns the
+    # wrapped value.
+    #
+    # @param _f A dummy function.  Not used.
+    # @return [T] The wrapped value.
+    def unwrap_err_or_else(f=nil, &_block)
+      @data
+    end
+
+    ##
     # Safely unwrap the `Result`. In the case of `Err`, this returns the
     # provided default value.
     #
@@ -196,6 +206,19 @@ module MonadOxide
     # @return [T] The `x` value.
     def unwrap_or(x)
       x
+    end
+
+    ##
+    # Safely unwrap the `Result`. In the case of `Err`, this uses the provided
+    # function to produce a value.
+    #
+    # @param f [Proc<B>] The function to call. Could be a block
+    #          instead.  Takes nothing and returns a [B=Object].
+    # @yield Will yield a block that takes nothing and returns a [B=Object].
+    #        Same as `f' parameter.
+    # @return [B] The value returned from `f`.
+    def unwrap_or_else(f=nil, &block)
+      (f || block).call()
     end
 
   end

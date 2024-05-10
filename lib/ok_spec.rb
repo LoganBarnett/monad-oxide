@@ -417,10 +417,44 @@ describe MonadOxide::Ok do
     end
   end
 
+  context '#unwrap_err_or_else' do
+
+    context 'with Blocks' do
+      it 'returns the data from the passed block' do
+        expect(MonadOxide.ok('foo').unwrap_err_or_else {|| 'bar'}).to(eq('bar'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'returns the data from the passed function' do
+        expect(
+          MonadOxide.ok('foo').unwrap_err_or_else(->() {'bar'}),
+        ).to(eq('bar'))
+      end
+    end
+
+  end
+
   context '#unwrap_or' do
 
     it 'returns the data from the Ok' do
       expect(MonadOxide.ok('foo').unwrap_or('bar')).to(eq('foo'))
+    end
+
+  end
+
+  context '#unwrap_or_else' do
+
+    context 'with Blocks' do
+      it 'returns the wrapped data' do
+        expect(MonadOxide.ok('foo').unwrap_or_else() {|| 'bar'}).to(eq('foo'))
+      end
+    end
+
+    context 'with Procs' do
+      it 'returns the wrapped data' do
+        expect(MonadOxide.ok('foo').unwrap_or_else(->() {'bar'})).to(eq('foo'))
+      end
     end
 
   end

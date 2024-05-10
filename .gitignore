@@ -5,3 +5,6 @@
 # Attempts to ignore files specific to your configuration will be rejected.
 #
 # Please justify all ignore entries with comments.
+
+# Ignore generated Yard metadata.  This isn't the documentation itself.
+.yardoc
