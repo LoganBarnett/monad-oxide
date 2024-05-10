@@ -41,6 +41,17 @@ module MonadOxide
     end
 
     ##
+    # Identifies that this is not an `Err`.
+    # For counterparts:
+    # @see MonadOxide::Ok#ok?
+    # @see MonadOxide::Err#ok?
+    # @see MonadOxide::Err#err?
+    # @return [Boolean] `false` because this is not an `Err`.
+    def err?()
+      false
+    end
+
+    ##
     # Falls through. @see Result#inspect_err for how this is handled in either
     # Result case, and @see Err.inspect_err for how this is handled in the Err
     # case.
@@ -94,6 +105,17 @@ module MonadOxide
     # @return [Result<A>] This `Ok'.
     def map_err(f=nil, &block)
       self
+    end
+
+    ##
+    # Identifies that this is an `Ok`.
+    # For counterparts:
+    # @see MonadOxide::Ok#err?
+    # @see MonadOxide::Err#ok?
+    # @see MonadOxide::Err#err?
+    # @return [Boolean] `true` because this is an `Ok`.
+    def ok?()
+      true
     end
 
     ##

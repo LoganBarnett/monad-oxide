@@ -57,6 +57,13 @@ module MonadOxide
     end
 
     ##
+    # Determine if this is a MonadOxide::Err.
+    # @return [Boolean] `true` if this is a MonadOxide::Err, `false` otherwise.
+    def err?()
+      false
+    end
+
+    ##
     # For `Ok', invokes `f' or the block with the data and returns the Result
     # returned from that. Exceptions raised during `f' or the block will return
     # an `Err<Exception>'.
@@ -177,6 +184,13 @@ module MonadOxide
     # @return [R] The return value of the executed Proc.
     def match(matcher)
       matcher[self.class].call(@data)
+    end
+
+    ##
+    # Determine if this is a MonadOxide::Ok.
+    # @return [Boolean] `true` if this is a MonadOxide::Ok, `false` otherwise.
+    def ok?()
+      false
     end
 
     ##

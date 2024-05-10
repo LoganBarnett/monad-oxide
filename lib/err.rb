@@ -66,6 +66,17 @@ module MonadOxide
     end
 
     ##
+    # Identifies that this is an `Err`.
+    # For counterparts:
+    # @see MonadOxide::Ok#ok?
+    # @see MonadOxide::Ok#err?
+    # @see MonadOxide::Err#ok?
+    # @return [Boolean] `true` because this is an `Err`.
+    def err?()
+      true
+    end
+
+    ##
     # Applies `f' or the block over the `Exception' and returns the same `Err'.
     # No changes are applied. This is ideal for logging.  Exceptions raised
     # during these transformations will return an `Err' with the Exception.
@@ -120,6 +131,17 @@ module MonadOxide
       rescue => e
         self.class.new(e)
       end
+    end
+
+    ##
+    # Identifies that this is not an `Ok`.
+    # For counterparts:
+    # @see MonadOxide::Ok#ok?
+    # @see MonadOxide::Ok#err?
+    # @see MonadOxide::Err#err?
+    # @return [Boolean] `false` because this is not an `Ok`.
+    def ok?()
+      false
     end
 
     ##
