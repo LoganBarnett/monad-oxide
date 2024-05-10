@@ -57,17 +57,10 @@ module MonadOxide
     end
 
     ##
-    # Un-nest this `Result'. This implementation is shared between `Ok' and
-    # `Err'. In both cases, the structure's data is operated upon.
-    # @return [Result] If `A' is a `Result' (meaning this `Result` is nested),
-    # return the inner-most `Result', regardless of the depth of nesting.
-    # Otherwise return `self'.
-    def flatten()
-      if @data.kind_of?(Result)
-        return @data.flatten()
-      else
-        self
-      end
+    # Determine if this is a MonadOxide::Err.
+    # @return [Boolean] `true` if this is a MonadOxide::Err, `false` otherwise.
+    def err?()
+      false
     end
 
     ##
@@ -111,6 +104,20 @@ module MonadOxide
     # @return [Result<A>] returns self.
     def inspect_err(f=nil, &block)
       Err.new(ResultMethodNotImplementedError.new())
+    end
+
+    ##
+    # Un-nest this `Result'. This implementation is shared between `Ok' and
+    # `Err'. In both cases, the structure's data is operated upon.
+    # @return [Result] If `A' is a `Result' (meaning this `Result` is nested),
+    # return the inner-most `Result', regardless of the depth of nesting.
+    # Otherwise return `self'.
+    def flatten()
+      if @data.kind_of?(Result)
+        return @data.flatten()
+      else
+        self
+      end
     end
 
     ##
@@ -177,6 +184,13 @@ module MonadOxide
     # @return [R] The return value of the executed Proc.
     def match(matcher)
       matcher[self.class].call(@data)
+    end
+
+    ##
+    # Determine if this is a MonadOxide::Ok.
+    # @return [Boolean] `true` if this is a MonadOxide::Ok, `false` otherwise.
+    def ok?()
+      false
     end
 
     ##

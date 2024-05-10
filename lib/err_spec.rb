@@ -102,6 +102,11 @@ describe MonadOxide::Err do
 
   end
 
+  context '#err?' do
+    it 'is an Err' do
+      expect(MonadOxide.err(StandardError.new('foo'))).to(be_err)
+    end
+  end
 
   context '#inspect_err' do
     context 'with blocks' do
@@ -304,6 +309,12 @@ describe MonadOxide::Err do
       ).to(eq('FOO'))
     end
 
+  end
+
+  context '#ok?' do
+    it 'is not an Ok' do
+      expect(MonadOxide.err(StandardError.new('foo'))).not_to(be_ok)
+    end
   end
 
   context '#or_else' do

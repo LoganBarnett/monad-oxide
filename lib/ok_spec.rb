@@ -113,6 +113,12 @@ describe MonadOxide::Ok do
 
   end
 
+  context '#err?' do
+    it 'is not an Err' do
+      expect(MonadOxide.ok('foo')).not_to(be_err)
+    end
+  end
+
   context '#inspect_err' do
     context 'with blocks' do
       it 'does nothing with the block' do
@@ -388,6 +394,12 @@ describe MonadOxide::Ok do
             .unwrap()
         ).to(eq('foo'))
       end
+    end
+  end
+
+  context '#ok?' do
+    it 'is an Ok' do
+      expect(MonadOxide.ok('foo')).to(be_ok)
     end
   end
 
