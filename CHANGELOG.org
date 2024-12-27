@@ -11,6 +11,10 @@
 *** Breaking
 *** Additions
 *** Fixes
+** v0.11.0
+*** Breaking
+*** Additions
+*** Fixes
 1. Fix the build (hopefully).
 2. Add a branch build test, so we know if tests are passing before we merge.
 ** v0.10.0
