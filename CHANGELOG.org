@@ -11,6 +11,10 @@
 *** Breaking
 *** Additions
 *** Fixes
+** v0.12.0
+*** Breaking
+*** Additions
+*** Fixes
 1. Retroactively add some release notes.  Not comprehensive.
 2. Correct typo in code comments.
 ** v0.11.0
