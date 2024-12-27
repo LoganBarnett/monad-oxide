@@ -11,6 +11,7 @@
 *** Breaking
 *** Additions
 *** Fixes
+1. Fix the build (hopefully).
 ** v0.10.0
 *** Breaking
 *** Additions
