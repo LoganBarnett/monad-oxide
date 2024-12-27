@@ -16,4 +16,4 @@ jobs:
           bundler-cache: true
       - name: Test
         run: |
-          rspec
+          bundle exec rspec
