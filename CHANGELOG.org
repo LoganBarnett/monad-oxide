@@ -11,6 +11,8 @@
 *** Breaking
 *** Additions
 *** Fixes
+1. Retroactively add some release notes.  Not comprehensive.
+2. Correct typo in code comments.
 ** v0.11.0
 *** Breaking
 *** Additions
@@ -20,18 +22,24 @@
 ** v0.10.0
 *** Breaking
 *** Additions
+1. Add ~Result#unwrap_or_else~ and ~Result#unwrap_err_or_else~ for providing
+   safe yet dynamic unwraps of ~Result~.
 *** Fixes
 ** v0.9.0
 *** Breaking
 *** Additions
+1. Add ~Result#ok?~ and ~Result#err?~ to make a smooth ~rspec~ experience using
+   its BDD style.
 *** Fixes
 ** v0.8.0
 *** Breaking
 *** Additions
 *** Fixes
+1. Fix method reference in README.
 ** v0.7.0
 *** Breaking
 *** Additions
+1. Add ~unwrap_or~ to ~Result~ for safely unwrapping ~Err~.
 *** Fixes
 ** v0.6.0
 *** Breaking
