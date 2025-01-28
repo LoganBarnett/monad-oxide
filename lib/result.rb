@@ -1,8 +1,20 @@
+# frozen_string_literal: true
+################################################################################
+# A monadic way of handling error based flow.
+# A Result is a semi-abstract class, whose implementors are Ok or Err.  Ok
+# carries some data and represents a success case.  Err carries an error and
+# represents a failure case.
+
+# Most methods on Result will follow a success or error "track".  This means an
+# Ok will execute all of the success methods, such as inspect_ok, map, and
+# and_then.  Err will execute error methods, such as inspect_err, map_err, and
+# or_else.  In cases where the method doesn't match the state of the Result
+# (Ok/Err), they return self, which also means they just fall through.
+################################################################################
+
+require_relative './error'
+
 module MonadOxide
-  ##
-  # All errors in monad-oxide should inherit from this error. This makes it easy
-  # to handle library-wide errors on the consumer side.
-  class MonadOxideError < StandardError; end
 
   ##
   # Thie Exception signals an area under construction, or somehow the consumer
@@ -26,12 +38,6 @@ module MonadOxide
     end
     attr_reader(:data)
   end
-
-  ##
-  # This `Exception' is raised when the consumer makes a dangerous wager
-  # about which state the `Result' is in, and lost. More specifically: An `Ok'
-  # cannot unwrap an Exception, and an `Err' cannot unwrap the `Ok' data.
-  class UnwrapError < MonadOxideError; end
 
   ##
   # A Result is a chainable series of sequential transformations. The Result

@@ -1,6 +1,9 @@
 require_relative './result'
 require_relative './err'
 require_relative './ok'
+require_relative './either'
+require_relative './left'
+require_relative './right'
 require_relative './array'
 require_relative './version'
 
@@ -18,6 +21,10 @@ module MonadOxide
     MonadOxide::Err.new(data)
   end
 
+  def left(data)
+    MonadOxide::Left.new(data)
+  end
+
   ##
   # Create an `Ok' as a conveniece method.
   # @param data [Object] The inner data for this `Ok'.
@@ -25,4 +32,9 @@ module MonadOxide
   def ok(data)
     MonadOxide::Ok.new(data)
   end
+
+  def right(data)
+    MonadOxide::Right.new(data)
+  end
+
 end
