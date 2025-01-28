@@ -10,6 +10,9 @@
 ** Upcoming
 *** Breaking
 *** Additions
+1. Add ~Either~, a structure similar to ~Result~ but uses unbiased ~Left~ and
+   ~Right~ branches - meaning there is no assumption that one branch must be an
+   error.  It is not in total feature parity, but much of it is usable.
 *** Fixes
 ** v0.12.0
 *** Breaking

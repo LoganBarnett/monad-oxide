@@ -35,6 +35,10 @@ functional error handling. In this library, =Either= is essentially the same as
 :CUSTOM_ID: examples
 :end:
 
+** Result
+:PROPERTIES:
+:CUSTOM_ID: examples--result
+:END:
 Example Disclaimer:
 
 Despite lots of these examples using =unwrap= and =unwrap_err=, these are highly
@@ -46,9 +50,9 @@ production instances. If so, code defensively around their usages and try to use
 the methods sparingly.  Having a dedicated quarantine zone around your =unwrap=
 and =unwrap_err= is the most preferable.
 
-** map
+*** map
 :PROPERTIES:
-:CUSTOM_ID: examples--map
+:CUSTOM_ID: examples--result--map
 :END:
 
 Changing the inner value with =map=:
@@ -57,7 +61,7 @@ require 'monad-oxide'
 
 MonadOxide.ok('test')
   .map(->(s) { s.upcase() })
-  .unwrap() # 'test'
+  .unwrap() # 'TEST'
 #+end_src
 
 #+RESULTS:
@@ -81,9 +85,9 @@ MonadOxide.ok('test')
 #+RESULTS:
 : #<ArgumentError: Can't have 'e' in test data.>
 
-** inspect
+*** inspect
 :PROPERTIES:
-:CUSTOM_ID: examples--inspect
+:CUSTOM_ID: examples--result--inspect
 :END:
 
 Inspecting a value in the chain without changing it:
@@ -107,9 +111,9 @@ MonadOxide.ok('test')
 
 #+RESULTS:
 : #<ArgumentError: Can't have 'e' in test data.>
-** =<kind>?= checks
+*** =<kind>?= checks
 :PROPERTIES:
-:CUSTOM_ID: examples--=<kind>=-checks
+:CUSTOM_ID: examples--result--=<kind>=-checks
 :END:
 
 You can check to see if you're working with an =Ok= or =Err= with =ok?= and
@@ -151,9 +155,9 @@ MonadOxide.err('foo').err?()
 #+RESULTS:
 : true
 
-*** with =rspec=
+**** with =rspec=
 :PROPERTIES:
-:CUSTOM_ID: examples--=<kind>=-checks--with-=rspec=
+:CUSTOM_ID: examples--result--=<kind>=-checks--with-=rspec=
 :END:
 
 And with =rspec=.  There's some difficulty in finding the right incantation to
@@ -169,9 +173,9 @@ expect(MonadOxide.err('foo')).to(be_err) # Pass.
 #+end_src
 
 
-** unwrapping
+*** unwrapping
 :PROPERTIES:
-:CUSTOM_ID: examples--unwrapping
+:CUSTOM_ID: examples--result--unwrapping
 :END:
 
 Unwrapping is the act of accessing the value inside the =Result=. It is often
@@ -179,9 +183,9 @@ considered dangerous because it raises exceptions - an action counter to the
 whole purpose of =monad-oxide=. However, there are variants documented below to
 make the operation safe.
 
-*** unwrap and unwrap_err
+**** unwrap and unwrap_err
 :PROPERTIES:
-:CUSTOM_ID: examples--unwrapping--unwrap-and-unwrap_err
+:CUSTOM_ID: examples--result--unwrapping--unwrap-and-unwrap_err
 :END:
 
 =unwrap= and =unwrap_err= both access inner =Ok= and =Err= data, respectively.
@@ -243,9 +247,9 @@ MonadOxide.err('foo').unwrap_err()
 #+RESULTS:
 : foo
 
-*** unwrap_or
+**** unwrap_or
 :PROPERTIES:
-:CUSTOM_ID: examples--unwrapping--unwrap_or
+:CUSTOM_ID: examples--result--unwrapping--unwrap_or
 :END:
 
 =unwrap_or= provides a safe means of unwrapping via a fallback value that is
@@ -273,9 +277,9 @@ MonadOxide.err('foo').unwrap_or('bar')
 #+RESULTS:
 : bar
 
-*** unwrap_or_else and unwrap_err_or_else
+**** unwrap_or_else and unwrap_err_or_else
 :PROPERTIES:
-:CUSTOM_ID: examples--unwrapping--unwrap_or_else-and-unwrap_err_or_else
+:CUSTOM_ID: examples--result--unwrapping--unwrap_or_else-and-unwrap_err_or_else
 :END:
 
 =unwrap_or_else= and =unwrap_err_or_else= both access inner =Ok= and =Err= data,
@@ -329,9 +333,9 @@ MonadOxide.err('foo').unwrap_err(->() { 'bar' })
 #+RESULTS:
 : foo
 
-** arrays
+*** arrays
 :PROPERTIES:
-:CUSTOM_ID: examples--arrays
+:CUSTOM_ID: examples--result--arrays
 :END:
 
 You can use =#into_result= to convert an =Array= of =Results= to =Result= of an
@@ -370,9 +374,9 @@ require 'monad-oxide'
 #+RESULTS:
 : ["bar", "qux"]
 
-** complex operations
+*** complex operations
 :PROPERTIES:
-:CUSTOM_ID: examples--complex-operations
+:CUSTOM_ID: examples--result--complex-operations
 :END:
 
 Complex operation:
@@ -407,6 +411,102 @@ MonadOxide.ok('test')
   .unwrap_err() # The above AppError containing an ArgumentError.
 #+end_src
 
+** Either
+:PROPERTIES:
+:CUSTOM_ID: examples--either
+:END:
+
+~Either~ represents a dual state where neither branch is given a bias (such as
+~Result~'s ~Ok~ and ~Err~ representing success and error branches).  ~Either~
+uses the arbitrary ~Left~ and ~Right~.
+
+This type ultimately is inspired by [[https://hackage.haskell.org/package/base-4.21.0.0/docs/Data-Either.html][Haskell's Either]], which uses ~Left~ for
+non-preferable branches and ~Right~ for preferable branches ("Right" being a
+synonym for "correct").
+
+One use case is to tally up results of some computation, where some of the
+results are non-fatal errors that should be ignored for future calculations.  In
+such a case you would produce ~Lefts~ for the errors (or maybe even skips) and
+~Rights~ for data that can move forward to the next steps.
+
+*** mapping
+:PROPERTIES:
+:CUSTOM_ID: examples--either--mapping
+:END:
+
+Changing the inner value with ~map_<direction>~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.left('test')
+  .map_left(->(s) { s.upcase() })
+  .unwrap_left() # 'TEST'
+#+end_src
+
+#+RESULTS:
+: TEST
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.right('test')
+  .map_right(->(s) { s.upcase() })
+  .unwrap_right() # 'TEST'
+#+end_src
+
+#+RESULTS:
+: TEST
+
+But note how changes don't happen when the sides are mismatched:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.left('test')
+  .map_right(->(s) { s.upcase() })
+  .unwrap_left() # 'test'
+#+end_src
+
+#+RESULTS:
+: test
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.right('test')
+  .map_left(->(s) { s.upcase() })
+  .unwrap_right() # 'test'
+#+end_src
+
+#+RESULTS:
+: test
+
+*** monadic and_then
+:PROPERTIES:
+:CUSTOM_ID: examples--either--monadic-and_then
+:END:
+
+Note how ~Either#unwrap_right~ must be used:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.left('test')
+  .left_and_then(->(s) { Either.right(s.upcase()) })
+  .unwrap_right() # 'TEST'
+#+end_src
+
+And the reverse:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.right('test')
+  .right_and_then(->(s) { Either.Left(s.upcase()) })
+  .unwrap_left() # 'TEST'
+#+end_src
+
 * Honorable Mentions
 :PROPERTIES:
 :CUSTOM_ID: honorable-mentions
@@ -438,6 +538,32 @@ work from general =Option= support as well as separate from each other.
 
 If we did =<<= and =>>= for =Result=, we should repeat that for =Option= as
 well.
+
+** Add Examples for All Either Operations
+:PROPERTIES:
+:CUSTOM_ID: roadmap--add-examples-for-all-either-operations
+:END:
+
+Result operations:
++ [X] ~map~
++ [X] ~and_then~
++ [ ] ~or_else~
++ [ ] ~unwrap~ et. al.
++ [ ] ~inspect~
++ [ ] ~rspec~ with ~be_left~ and ~be_right~.
+
+** Add Examples for All Result Operations
+:PROPERTIES:
+:CUSTOM_ID: roadmap--add-examples-for-all-result-operations
+:END:
+
+Result operations:
++ [X] ~map~
++ [ ] ~and_then~
++ [ ] ~or_else~
++ [X] ~unwrap~ et. al.
++ [X] ~inspect~
++ [ ] ~rspec~ with ~be_ok~ and ~be_err~.
 
 ** Check on Documentation Generation
 :PROPERTIES:

@@ -1,4 +1,5 @@
 require_relative './result'
+require_relative './error'
 
 module MonadOxide
   ##
@@ -53,7 +54,7 @@ module MonadOxide
 
     ##
     # Falls through. @see Result#inspect_err for how this is handled in either
-    # Result case, and @see Err.inspect_err for how this is handled in the Err
+    # Result case, and @see Err#inspect_err for how this is handled in the Err
     # case.
     # @param f [Proc] Optional Proc - ignored.
     # @yield An ignored block.
@@ -81,7 +82,7 @@ module MonadOxide
     end
 
     ##
-    # Applies `f' or the block over the data and returns a new new `Ok' with the
+    # Applies `f' or the block over the data and returns a new `Ok' with the
     # returned value.
     # @param f [Proc<A, B>] The function to call. Could be a block
     #          instead. Takes an [A=Object] and returns a B.
