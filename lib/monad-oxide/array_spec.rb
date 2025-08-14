@@ -1,3 +1,5 @@
+require 'monad-oxide'
+
 describe Array do
 
   context '#into_result' do

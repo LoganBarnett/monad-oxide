@@ -1,6 +1,4 @@
 require 'monad-oxide'
-require 'ok'
-require 'err'
 
 describe MonadOxide::Err do
 

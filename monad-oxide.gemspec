@@ -1,4 +1,4 @@
-require_relative 'lib/version'
+require_relative 'lib/monad-oxide/version'
 
 Gem::Specification.new do |s|
   s.name = 'monad-oxide'
@@ -14,6 +14,7 @@ EOD
   # This make work on earlier versions, but it's hard to find a feature/version
   # matrix.
   s.required_ruby_version = '>= 2.7.0'
+  s.require_paths = ['lib']
   # Used by yard to process org-mode (.org) documents.
   s.add_development_dependency 'org-ruby'
   # Used for building the gems.
@@ -22,6 +23,8 @@ EOD
   s.add_development_dependency 'rspec'
   # Used to generate and publish documentation to rdoc.
   s.add_development_dependency 'yard'
+  # Used to test our helper for Concurrent::Promises::Future.
+  s.add_development_dependency 'concurrent-ruby'
   s.authors = [
     'Logan Barnett',
   ]

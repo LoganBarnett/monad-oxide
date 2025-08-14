@@ -1,5 +1,5 @@
+# frozen_string_literal: true
 require 'monad-oxide'
-require 'result'
 
 describe MonadOxide::Result do
   context '#initialize' do
