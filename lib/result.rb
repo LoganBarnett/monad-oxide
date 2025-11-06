@@ -58,6 +58,28 @@ module MonadOxide
     #   protected :new
     # end
 
+    class << self
+
+      ##
+      # Convenience for executing arbitrary code and coercing it to a Result.
+      # Any exceptions raised coerce it into an Err, and the return value is the
+      # value for the Ok.
+      # @param f [Proc<Result<A>>] The function to call. Could be a block
+      #          instead. Takes no arguments and could return any [Object].
+      # @yield Will yield a block that takes no arguments A and returns a
+      #        [Object]. Same as `f' parameter.
+      # @return [MonadOxide::Result<A, E>] An Ok if there are no exceptions
+      # raised, and an Err with the exception if any exception is raised.
+      def try(f=nil, &block)
+        begin
+          MonadOxide.ok((f || block).call())
+        rescue => e
+          MonadOxide.err(e)
+        end
+      end
+
+    end
+
     def initialize(data)
       raise NoMethodError.new('Do not use Result directly. See Ok and Err.')
     end

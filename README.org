@@ -374,6 +374,42 @@ require 'monad-oxide'
 #+RESULTS:
 : ["bar", "qux"]
 
+*** try
+:PROPERTIES:
+:CUSTOM_ID: examples--result--try
+:END:
+
+~try~ is a way of taking some arbitrary code and converting the returned value
+into a ~Ok~ or the raised error as an ~Err~.  This is for convenience to get you
+started in a ~Result~ chain without an artificial
+~MonadOxide.ok(nil).and_then(...)~.
+
+The positive case:
+
+#+begin_src ruby :results value verbatim :exports both
+require 'monad-oxide'
+
+r = MonadOxide::Result.try(->() {
+  return 1
+})
+r.unwrap()
+#+end_src
+
+#+RESULTS:
+: 1
+
+#+begin_src ruby :results value verbatim :exports both
+require 'monad-oxide'
+
+r = MonadOxide::Result.try(->() {
+  raise StandardError.new('bar')
+})
+r.unwrap_err()
+#+end_src
+
+#+RESULTS:
+: #<StandardError: bar>
+
 *** complex operations
 :PROPERTIES:
 :CUSTOM_ID: examples--result--complex-operations
