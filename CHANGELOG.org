@@ -10,6 +10,8 @@
 ** Upcoming
 *** Breaking
 *** Additions
+1. Add ~MonadOxide::Result.try~ as a convenience to enter a ~Result~ chain.
+
 *** Fixes
 ** v0.13.0
 *** Breaking
