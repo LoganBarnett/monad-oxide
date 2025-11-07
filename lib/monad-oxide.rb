@@ -4,6 +4,9 @@ require_relative './ok'
 require_relative './either'
 require_relative './left'
 require_relative './right'
+require_relative './option'
+require_relative './some'
+require_relative './none'
 require_relative './array'
 require_relative './version'
 
@@ -11,6 +14,7 @@ require_relative './version'
 # The top level module for the monad-oxide library. Of interest, @see `Result',
 # @see `Err', and @see `Ok'.
 module MonadOxide
+
   module_function
 
   ##
@@ -25,6 +29,10 @@ module MonadOxide
     MonadOxide::Left.new(data)
   end
 
+  def none()
+    MonadOxide::None.new()
+  end
+
   ##
   # Create an `Ok' as a conveniece method.
   # @param data [Object] The inner data for this `Ok'.
@@ -33,8 +41,16 @@ module MonadOxide
     MonadOxide::Ok.new(data)
   end
 
+  def option(data)
+    data.nil?() ? none() : some(data)
+  end
+
   def right(data)
     MonadOxide::Right.new(data)
+  end
+
+  def some(data)
+    MonadOxide::Some.new(data)
   end
 
 end
