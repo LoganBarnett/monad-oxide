@@ -19,6 +19,7 @@
    representing optional values.  Includes all core methods: ~some?~,
    ~none?~, ~map~, ~map_none~, ~inspect_some~, ~inspect_none~, ~and_then~,
    ~or_else~, ~unwrap~, and ~unwrap_none~.
+2. Add ~Option#match~ for pattern matching over ~Some~ and ~None~ variants.
 *** Fixes
 ** v0.14.0
 *** Breaking

@@ -206,4 +206,15 @@ describe MonadOxide::Some do
 
   end
 
+  context '#match' do
+
+    it 'calls the Some branch with the data' do
+      expect(
+        MonadOxide.some('foo')
+          .match({ MonadOxide::Some => ->(x) { x.upcase() } })
+      ).to(eq('FOO'))
+    end
+
+  end
+
 end

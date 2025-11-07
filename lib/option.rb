@@ -191,6 +191,30 @@ module MonadOxide
       raise OptionMethodNotImplementedError.new()
     end
 
+    ##
+    # Use pattern matching to work with both Some and None variants. This is
+    # useful when it is desirable to have both variants handled in the same
+    # location. It can also be useful when either variant can coerced into a
+    # non-Option type.
+    #
+    # Ruby has no built-in pattern matching, but the next best thing is a
+    # Hash using the Option classes themselves as the keys.
+    #
+    # Tests for this are found in Some and None's tests.
+    #
+    # @param matcher [Hash<Class, Proc<T, R>] matcher The matcher to match
+    # upon.
+    # @option matcher [Proc] MonadOxide::Some The branch to execute for Some.
+    # @option matcher [Proc] MonadOxide::None The branch to execute for None.
+    # @return [R] The return value of the executed Proc.
+    def match(matcher)
+      if self.kind_of?(None)
+        matcher[self.class].call()
+      else
+        matcher[self.class].call(@data)
+      end
+    end
+
   end
 
 end

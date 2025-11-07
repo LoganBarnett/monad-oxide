@@ -190,4 +190,15 @@ describe MonadOxide::None do
 
   end
 
+  context '#match' do
+
+    it 'calls the None branch with no arguments' do
+      expect(
+        MonadOxide.none()
+          .match({ MonadOxide::None => ->() { 'default' } })
+      ).to(eq('default'))
+    end
+
+  end
+
 end

@@ -802,6 +802,39 @@ MonadOxide.option('foo').unwrap()
 #+RESULTS:
 : foo
 
+*** match
+:PROPERTIES:
+:CUSTOM_ID: examples--option--match
+:END:
+
+Pattern matching over ~Some~ and ~None~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.some('test')
+  .match({
+    MonadOxide::Some => ->(x) { "Value: #{x}" },
+    MonadOxide::None => ->() { "No value" }
+  })
+#+end_src
+
+#+RESULTS:
+: Value: test
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.none()
+  .match({
+    MonadOxide::Some => ->(x) { "Value: #{x}" },
+    MonadOxide::None => ->() { "No value" }
+  })
+#+end_src
+
+#+RESULTS:
+: No value
+
 * Honorable Mentions
 :PROPERTIES:
 :CUSTOM_ID: honorable-mentions
