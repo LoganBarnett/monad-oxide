@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    monad-oxide (0.14.0)
+    monad-oxide (0.15.0)
 
 GEM
   remote: https://rubygems.org/
