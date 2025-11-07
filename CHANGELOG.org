@@ -10,6 +10,11 @@
 ** Upcoming
 *** Breaking
 *** Additions
+1. Add ~Option~, a structure similar to Rust's ~Option~ with ~Some~ and
+   ~None~ variants.  This provides a safer alternative to using ~nil~ for
+   representing optional values.  Includes all core methods: ~some?~,
+   ~none?~, ~map~, ~map_none~, ~inspect_some~, ~inspect_none~, ~and_then~,
+   ~or_else~, ~unwrap~, and ~unwrap_none~.
 *** Fixes
 ** v0.14.0
 *** Breaking

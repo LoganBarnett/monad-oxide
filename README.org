@@ -543,6 +543,265 @@ MonadOxide.right('test')
   .unwrap_left() # 'TEST'
 #+end_src
 
+** Option
+:PROPERTIES:
+:CUSTOM_ID: examples--option
+:END:
+
+~Option~ represents a value that may or may not be present. It has two
+variants: ~Some~ for when a value is present, and ~None~ for when it is not.
+This is similar to Rust's ~Option~ type and provides a safer alternative to
+using ~nil~.
+
+*** map
+:PROPERTIES:
+:CUSTOM_ID: examples--option--map
+:END:
+
+Changing the inner value with ~map~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.some('test')
+  .map(->(s) { s.upcase() })
+  .unwrap() # 'TEST'
+#+end_src
+
+#+RESULTS:
+: TEST
+
+But note how ~map~ falls through for ~None~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.none()
+  .map(->(s) { s.upcase() })
+  .none?() # true
+#+end_src
+
+#+RESULTS:
+: true
+
+*** map_none
+:PROPERTIES:
+:CUSTOM_ID: examples--option--map_none
+:END:
+
+Transforming a ~None~ into a ~Some~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.none()
+  .map_none(->() { 'default' })
+  .unwrap() # 'default'
+#+end_src
+
+#+RESULTS:
+: default
+
+*** and_then
+:PROPERTIES:
+:CUSTOM_ID: examples--option--and_then
+:END:
+
+Chaining operations that return ~Option~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.some('test')
+  .and_then(->(s) {
+    if s.length > 3
+      MonadOxide.some(s.upcase())
+    else
+      MonadOxide.none()
+    end
+  })
+  .unwrap() # 'TEST'
+#+end_src
+
+#+RESULTS:
+: TEST
+
+*** or_else
+:PROPERTIES:
+:CUSTOM_ID: examples--option--or_else
+:END:
+
+Providing a fallback for ~None~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.none()
+  .or_else(->() { MonadOxide.some('fallback') })
+  .unwrap() # 'fallback'
+#+end_src
+
+#+RESULTS:
+: fallback
+
+*** inspect
+:PROPERTIES:
+:CUSTOM_ID: examples--option--inspect
+:END:
+
+Inspecting values without changing them:
+
+#+begin_src ruby :results value :exports both
+require 'logger'
+require 'monad-oxide'
+
+logger = Logger.new(STDERR)
+MonadOxide.some('test')
+  .inspect_some(logger.method(:info))
+  .inspect_none(->() { logger.warn('No value!') })
+  .unwrap() # 'test'
+#+end_src
+
+#+RESULTS:
+: test
+
+*** =<kind>?= checks
+:PROPERTIES:
+:CUSTOM_ID: examples--option--=<kind>=-checks
+:END:
+
+You can check to see if you're working with a ~Some~ or ~None~ with ~some?~
+and ~none?~. Generally these should see the most use with your unit tests in
+the form of ~expect(foo).to(be_some())~ and ~expect(bar).to(be_none()))~.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.some('foo').some?()
+#+end_src
+
+#+RESULTS:
+: true
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.some('foo').none?()
+#+end_src
+
+#+RESULTS:
+: false
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.none().some?()
+#+end_src
+
+#+RESULTS:
+: false
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+MonadOxide.none().none?()
+#+end_src
+
+#+RESULTS:
+: true
+
+*** unwrapping
+:PROPERTIES:
+:CUSTOM_ID: examples--option--unwrapping
+:END:
+
+Unwrapping is the act of accessing the value inside the ~Option~. It is often
+considered dangerous because it raises exceptions for ~None~ values.
+
+**** unwrap and unwrap_none
+:PROPERTIES:
+:CUSTOM_ID: examples--option--unwrapping--unwrap-and-unwrap_none
+:END:
+
+~unwrap~ and ~unwrap_none~ both access inner ~Some~ and ~None~ data,
+respectively. If the ~Option~ is mismatched (~unwrap~ with ~None~ or
+~unwrap_none~ with ~Some~), a ~MonadOxide::UnwrapError~ is raised.
+
+It is recommended to only use this for debugging purposes.
+
+~Some~ with ~unwrap~ just gets the data.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.some('foo').unwrap()
+#+end_src
+
+#+RESULTS:
+: foo
+
+~None~ with ~unwrap~ raises ~UnwrapError~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+begin
+  MonadOxide.none().unwrap()
+rescue => e
+  e.inspect()
+end
+#+end_src
+
+#+RESULTS:
+: #<MonadOxide::UnwrapError: MonadOxide::None could not be unwrapped as a Some.>
+
+~Some~ with ~unwrap_none~ raises ~UnwrapError~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+begin
+  MonadOxide.some('foo').unwrap_none()
+rescue => e
+  e.inspect()
+end
+#+end_src
+
+#+RESULTS:
+: #<MonadOxide::UnwrapError: MonadOxide::Some with "foo" could not be unwrapped as a\nNone.\n>
+
+~None~ with ~unwrap_none~ returns nil.
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.none().unwrap_none()
+#+end_src
+
+#+RESULTS:
+: 
+
+*** option helper
+:PROPERTIES:
+:CUSTOM_ID: examples--option--option-helper
+:END:
+
+The ~option~ helper converts ~nil~ to ~None~ and any other value to ~Some~:
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.option(nil).none?()
+#+end_src
+
+#+RESULTS:
+: true
+
+#+begin_src ruby :results value :exports both
+require 'monad-oxide'
+
+MonadOxide.option('foo').unwrap()
+#+end_src
+
+#+RESULTS:
+: foo
+
 * Honorable Mentions
 :PROPERTIES:
 :CUSTOM_ID: honorable-mentions
