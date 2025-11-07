@@ -11,6 +11,10 @@
 *** Breaking
 *** Additions
 *** Fixes
+** v0.16.0
+*** Breaking
+*** Additions
+*** Fixes
 ** v0.15.0
 *** Breaking
 *** Additions
