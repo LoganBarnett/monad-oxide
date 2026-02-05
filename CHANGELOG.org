@@ -9,6 +9,10 @@
 * changelog
 ** Upcoming
 *** Breaking
+*** Additions
+*** Fixes
+** v0.17.0
+*** Breaking
 1. Some require paths may change if you were depending on the odd way that this
    library was storing its files (directly under ~lib~, a silent no-no in Ruby
    gem land).
