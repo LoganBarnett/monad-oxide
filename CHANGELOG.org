@@ -9,8 +9,13 @@
 * changelog
 ** Upcoming
 *** Breaking
+1. Some require paths may change if you were depending on the odd way that this
+   library was storing its files (directly under ~lib~, a silent no-no in Ruby
+   gem land).
 *** Additions
+1. Add ~Promise#into_result~ for ~concurrrent-ruby~.
 *** Fixes
+1. Prevent ~$LOAD_PATH~ pollution by putting Ruby files under ~lib/monad-oxide~.
 ** v0.16.0
 *** Breaking
 *** Additions
