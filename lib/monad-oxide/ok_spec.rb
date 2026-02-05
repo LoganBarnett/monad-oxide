@@ -1,6 +1,6 @@
+# frozen_string_literal: true
+
 require 'monad-oxide'
-require 'ok'
-require 'err'
 
 describe MonadOxide::Ok do
 

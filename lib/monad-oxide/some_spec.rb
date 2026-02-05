@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'monad-oxide'
-require 'some'
-require 'none'
+require 'monad-oxide/some'
+require 'monad-oxide/none'
 
 describe MonadOxide::Some do
 

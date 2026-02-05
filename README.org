@@ -410,6 +410,32 @@ r.unwrap_err()
 #+RESULTS:
 : #<StandardError: bar>
 
+*** promises/futures
+:PROPERTIES:
+:CUSTOM_ID: examples--result--promises/futures
+:END:
+
+If you are using [[https://github.com/ruby-concurrency/concurrent-ruby][conccurent-ruby]], ~monad-oxide~ supplies a helper you can use to
+coerce a ~Future~ into a ~Result~.  You need to require the
+~monad-oxide/concurrent-promsies~ file to get this, independently from your
+~monad-oxide~ require.
+
+#+begin_src ruby :results output :exports code
+require 'monad-oxide'
+require 'monad-oxide/concurrent-promises'
+
+puts(
+  Concurrent::Promises.future() {
+    'foo'
+  }
+    .into_result()
+    .unwrap(),
+)
+#+end_src
+
+#+RESULTS:
+: foo
+
 *** complex operations
 :PROPERTIES:
 :CUSTOM_ID: examples--result--complex-operations
