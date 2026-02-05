@@ -10,7 +10,7 @@ version_set(version)
 puts `bundle config unset deployment && bundle install --no-deployment`
 # Gemfile.lock is also bumped after this, and needs to be added or it will foul
 # up later releases.
-puts `git add CHANGELOG.org lib/version.rb Gemfile.lock`
+puts `git add CHANGELOG.org lib/monad-oxide/version.rb Gemfile.lock`
 puts `git commit -m "v#{version}"`
 # TODO: -a is unsigned (annotated) tagging, use signed tagging.
 puts `git tag "v#{version}"`
