@@ -6,6 +6,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    concurrent-ruby (1.3.5)
     diff-lcs (1.5.0)
     org-ruby (0.9.12)
       rubypants (~> 0.2)
@@ -32,6 +33,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  concurrent-ruby
   monad-oxide!
   org-ruby
   rake

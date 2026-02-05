@@ -1,14 +1,14 @@
-require_relative './result'
-require_relative './err'
-require_relative './ok'
-require_relative './either'
-require_relative './left'
-require_relative './right'
-require_relative './option'
-require_relative './some'
-require_relative './none'
-require_relative './array'
-require_relative './version'
+# frozen_string_literal: true
+require_relative './monad-oxide/result'
+require_relative './monad-oxide/err'
+require_relative './monad-oxide/ok'
+require_relative './monad-oxide/either'
+require_relative './monad-oxide/left'
+require_relative './monad-oxide/right'
+require_relative './monad-oxide/array'
+require_relative './monad-oxide/version'
+# Intentionally do not require helpers which inflict external dependencies, such
+# as ./concurrent-promises.rb which requires the 'concurrent' gem.
 
 ##
 # The top level module for the monad-oxide library. Of interest, @see `Result',
