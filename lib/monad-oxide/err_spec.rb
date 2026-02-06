@@ -7,7 +7,7 @@ describe MonadOxide::Err do
   ctor_tests = ->(ctor) {
 
     it 'creates an Err from the data provided' do
-      expect(ctor.call('foo').unwrap_err()).to(eq('foo'))
+      expect(ctor.call('foo').unwrap_err().message()).to(eq('foo'))
     end
 
     it 'establishes a backtrace for an unraised Exception' do
@@ -451,14 +451,20 @@ describe MonadOxide::Err do
 
     context 'with Blocks' do
       it 'returns the wrapped data' do
-        expect(MonadOxide.err('foo').unwrap_err_or_else {|| 'bar'}).to(eq('foo'))
+        expect(
+          MonadOxide.err('foo')
+            .unwrap_err_or_else {|| 'bar'}
+            .message(),
+        ).to(eq('foo'))
       end
     end
 
     context 'with Procs' do
       it 'returns the wrapped data' do
         expect(
-          MonadOxide.err('foo').unwrap_err_or_else(->() {'bar'}),
+          MonadOxide.err('foo')
+            .unwrap_err_or_else(->() {'bar'})
+            .message(),
         ).to(eq('foo'))
       end
     end

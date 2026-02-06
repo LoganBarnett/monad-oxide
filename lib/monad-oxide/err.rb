@@ -20,14 +20,17 @@ module MonadOxide
     #
     # On a cursory search, this is not documented behavior.
     #
-    # @param x [Exception|T] The potential Exception to add a backtrace to, if
-    #                        it is missing a backtrace.
-    # @returns [Exception|T] The passed value, with a backtrace added if it is
-    #                        an Exception.
+    # @param x [Exception] The potential Exception to add a backtrace to, if
+    #                      it is missing a backtrace.
+    # @returns [Exception] The passed value, with a backtrace added if it is
+    #                      an Exception.  Non-Exceptions are wrapped in an
+    #                      Exception.
     def self.backtrace_fix(x)
-      if x.kind_of?(Exception) && x.backtrace.nil?
+      if  !x.kind_of?(Exception)
+        raise StandardError.new(x)
+      elsif x.kind_of?(Exception) && x.backtrace.nil?()
         raise x
-      else
+      else # Must be Exception with a backtrace already.
         x
       end
     rescue => e

@@ -26,7 +26,7 @@ describe Array do
 
     end
 
-    context 'all Errs' do
+    context('all Errs') {
 
       it 'returns a single Err' do
         result = [
@@ -46,7 +46,7 @@ describe Array do
         expect(result.unwrap_err().map(&:message)).to(eq(['foo', 'bar', 'baz']))
       end
 
-    end
+    }
 
     context 'mixed Oks and Errs' do
 
@@ -77,6 +77,43 @@ describe Array do
         expect(result.unwrap_err().map(&:message)).not_to(include('baz'))
       end
     end
+
+    context('non-Result values') {
+
+      it('wraps plain values in Ok') {
+        result = [1, 2, 3].into_result()
+        expect(result.unwrap()).to(eq([1, 2, 3]))
+      }
+
+      it('wraps Exceptions in Err') {
+        result = [
+          StandardError.new('error1'),
+          StandardError.new('error2'),
+        ].into_result()
+        expect(result.unwrap_err().map(&:message)).to(eq(['error1', 'error2']))
+      }
+
+      it('treats mixed plain values and Exceptions correctly') {
+        result = [
+          1,
+          StandardError.new('error'),
+          3,
+        ].into_result()
+        expect(result.unwrap_err().map(&:message)).to(eq(['error']))
+      }
+
+      it('combines plain values, Exceptions, and Results') {
+        result = [
+          1,
+          StandardError.new('error1'),
+          MonadOxide.ok(2),
+          MonadOxide.err(StandardError.new('error2')),
+          3,
+        ].into_result()
+        expect(result.unwrap_err().map(&:message)).to(eq(['error1', 'error2']))
+      }
+
+    }
 
   end
 

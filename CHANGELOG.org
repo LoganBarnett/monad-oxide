@@ -9,7 +9,14 @@
 * changelog
 ** Upcoming
 *** Breaking
+1. ~Err~ now coerces all values into a ~StandardError~ that are not ~Exception~
+   already.  This is to help with consistency of combinators.
+2. ~Array#into_result~ now looks for ~Exceptions~ and treats them as if they
+   were produced by ~Err~, which makes the combination bidirectional and
+   idempotent.
 *** Additions
+1. ~Promises~ whose results are ~Arrays~ of ~Results~ will now be flattened when
+   using ~Promise#into_result~.
 *** Fixes
 ** v0.17.0
 *** Breaking
