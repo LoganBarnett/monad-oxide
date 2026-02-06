@@ -2,23 +2,34 @@
 class Array
 
   ##
-  # Take an Array of Results and convert them to a single Result whose value is
-  # an Array of Ok or Err values. Ok Results will have only Ok values, and Err
-  # Results will have only Err values. A single Err in the input Array will
-  # convert the entire Result into an Err.
+  # Converts an Array into a single Result.  Returns Ok containing all values
+  # if every element succeeds, otherwise returns Err containing _any_ errors.
   #
-  # @return [MonadOxide::Result<Array<V>, Array<E>>] A Result whose value is an
-  # array of all of the Oks or Errs in the Array.
+  # Element interpretation:
+  # - Ok/Err Results: evaluated for success/failure.
+  # - Exceptions: treated as errors.
+  # - Other values: treated as successes.
+  #
+  # @return [MonadOxide::Result<Array<V>, Array<E>>] Ok with all values if
+  #   all succeed, or Err with all errors if any fail.
   def into_result()
     tracker = {
       oks: [],
       errs: [],
     }
-    self.each do |result|
-      result.match({
-        MonadOxide::Ok => ->(x) { tracker[:oks].push(x) },
-        MonadOxide::Err => ->(e) { tracker[:errs].push(e) },
-      })
+    self.each do |element|
+      (
+        element.is_a?(MonadOxide::Result) ?
+          element :
+          (element.is_a?(Exception) ?
+            MonadOxide.err(element) :
+            MonadOxide.ok(element)
+            )
+      )
+        .match({
+          MonadOxide::Ok => ->(x) { tracker[:oks].push(x) },
+          MonadOxide::Err => ->(e) { tracker[:errs].push(e) },
+        })
     end
     tracker[:errs].empty?() ?
       MonadOxide.ok(tracker[:oks]) :
