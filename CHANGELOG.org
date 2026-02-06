@@ -9,6 +9,10 @@
 * changelog
 ** Upcoming
 *** Breaking
+*** Additions
+*** Fixes
+** v0.18.0
+*** Breaking
 1. ~Err~ now coerces all values into a ~StandardError~ that are not ~Exception~
    already.  This is to help with consistency of combinators.
 2. ~Array#into_result~ now looks for ~Exceptions~ and treats them as if they
